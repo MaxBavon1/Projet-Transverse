@@ -1,1 +1,3 @@
-print("Working !")
+import pygame
+
+print("Launching Game !")
