@@ -11,13 +11,13 @@ width, height = 25, 25
 speed = 8
 color = (0, 0, 255)	
 
-sprite = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/idle.png").convert_alpha()
+sprite = pygame.image.load("assets/idle.png").convert_alpha()
 sprite = pygame.transform.scale(sprite, (sprite.get_width()*2, sprite.get_height()*2))
 
-bullet_sprite = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/bulletd.png").convert_alpha()
+bullet_sprite = pygame.image.load("assets/bulletd.png").convert_alpha()
 bullet_sprite = pygame.transform.scale(bullet_sprite, (bullet_sprite.get_width()*2, bullet_sprite.get_height()*2))
 
-background = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/background.png").convert_alpha()
+background = pygame.image.load("assets/background.png").convert_alpha()
 
 bullets = []
 
