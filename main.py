@@ -3,6 +3,8 @@ from scripts.slime import *
 from random import randint
 import pygame
 
+#gorgorQ joined!
+
 window = pygame.display.set_mode((960, 544))
 
 clock = pygame.time.Clock()
