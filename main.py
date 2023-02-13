@@ -1,6 +1,8 @@
 from scripts.bullet import *
 import pygame
 
+# Dev
+
 window = pygame.display.set_mode((512, 512))
 
 clock = pygame.time.Clock()
