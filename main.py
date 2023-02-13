@@ -30,12 +30,17 @@ background = pygame.image.load("assets/background.png").convert_alpha()
 
 bullets = []
 slimes = []
+delay = 10
+timer = 0
 
 def shoot():
 	bullets.append(Bullet(posx + width / 2, posy + height / 2))
 
 def spawn():
-	slimes.append(Slime(960, randint(0, 500), 1))
+	global timer
+	if timer > delay:
+		timer = 0
+		slimes.append(Slime(960, randint(0, 500), 1))
 
 while 1:
 
@@ -67,6 +72,7 @@ while 1:
 
 	# Update
 	deltaTime = clock.tick(60) * 0.01
+	timer += deltaTime
 	spawn()
 
 	for i in range(len(slimes)):
