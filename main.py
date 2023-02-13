@@ -4,6 +4,7 @@ from random import randint
 import pygame
 
 #gorgorQ joined!
+#lilou joined
 
 window = pygame.display.set_mode((960, 544))
 
