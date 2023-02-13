@@ -5,6 +5,7 @@ import pygame
 
 #gorgorQ joined!
 #lilou joined
+#nawal joined
 
 window = pygame.display.set_mode((960, 544))
 
