@@ -1,66 +1,63 @@
+# ---- Development Branch (In Progress) ----
+from scripts.image import *
+from scripts.entity import *
 from scripts.bullet import *
 import pygame
 
-# Dev
+print(PATH)
 
-window = pygame.display.set_mode((512, 512))
+class GameManager:
 
-clock = pygame.time.Clock()
-deltaTime = 0
+	def __init__(self) -> None:
+		# ==== Window ====
+		self.WIDTH = 1024
+		self.HEIGHT = 512
+		self.window = pygame.display.set_mode((1024, 512))
+		self.clock = pygame.time.Clock()
+		self.deltaTime = 0
+		# ==== Game ====
+		self.player = Entity((256, 256), 8, load_image("assets/idle.png", 2))
+		self.bullets = []
 
-posx, posy = 256, 256
-width, height = 25, 25
-speed = 8
-color = (0, 0, 255)	
+	def events(self):
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				self.quit()
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button == 1:
+					pass
+					# shoot()
 
-sprite = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/idle.png").convert_alpha()
-sprite = pygame.transform.scale(sprite, (sprite.get_width()*2, sprite.get_height()*2))
+	def update(self):
+		self.deltaTime = self.clock.tick(60) * 0.01
 
-bullet_sprite = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/bulletd.png").convert_alpha()
-bullet_sprite = pygame.transform.scale(bullet_sprite, (bullet_sprite.get_width()*2, bullet_sprite.get_height()*2))
+		self.player.update(self.deltaTime)
 
-background = pygame.image.load("D:/Programmation/Python/Projects/Example/assets/background.png").convert_alpha()
+		for bullet in self.bullets:
+			bullet.update(self.deltaTime)
 
-bullets = []
+	def render(self):
+		self.window.fill((135, 135, 135))
 
-def shoot():
-	bullets.append(Bullet(posx + width / 2, posy + height / 2))
+		self.player.render(self.window)
 
-while 1:
+		for bullet in self.bullets:
+			bullet.render(self.window)
 
-	# Input
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			exit()
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			if event.button == 1:
-				shoot()
+		pygame.display.update()
+
+	def run(self):
+		print("[LAUNCHING GAME...]")
+		while 1:
+			self.events()
+			self.update()
+			self.render()
+
+	def quit(self):
+		print("[QUITING GAME...]")
+		pygame.quit()
+		exit()
 
 
-	keyboard = pygame.key.get_pressed()
-	if keyboard[pygame.K_d]:
-		posx += speed * deltaTime
-	if keyboard[pygame.K_q]:
-		posx -= speed * deltaTime
-	if keyboard[pygame.K_z]:
-		posy -= speed * deltaTime
-	if keyboard[pygame.K_s]:
-		posy += speed * deltaTime
-
-	# Update
-	deltaTime = clock.tick(60) * 0.01
-
-	for bullet in bullets:
-		bullet.update(deltaTime)
-
-	# Render
-	window.blit(background, (0, 0))
-
-	# Bullets
-	for bullet in bullets:
-		bullet.render(window, bullet_sprite)
-	# Player
-	window.blit(sprite, (posx, posy))
-
-	pygame.display.update()
+if __name__ == "__main__":
+	GameManager().run()
