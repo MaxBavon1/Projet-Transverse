@@ -1,12 +1,22 @@
-class Bullet:
+from .entity import *
+import pygame
 
-    def __init__(self, posx, posy):
-        self.x = posx
-        self.y = posy
-        self.speed = 30
+class Bullet(Entity):
     
-    def update(self, dt):
-        self.x += self.speed * dt
+    lifeSpan = 4
+    bulletForce = 1000
 
-    def render(self, window, sprite):
-	    window.blit(sprite, (self.x, self.y))
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.spawnTime = self.manager.game.ticks
+    
+    def update(self, deltaTime, gravityScale):
+        if self.manager.game.ticks - self.spawnTime > self.lifeSpan:
+            self.alive = False
+        
+        super().update(deltaTime, gravityScale)
+
+    def on_collision(self, entity):
+        if entity.tag == "slime":
+            self.alive = False
+    

@@ -1,48 +1,68 @@
 # ---- Development Branch (In Progress) ----
-from scripts.image import *
-from scripts.entity import *
-from scripts.bullet import *
+from scripts.entityManager import *
+from pygame.locals import *
 import pygame
 
-print(PATH)
 
 class GameManager:
 
 	def __init__(self) -> None:
+		pygame.init()
 		# ==== Window ====
-		self.WIDTH = 1024
-		self.HEIGHT = 512
-		self.window = pygame.display.set_mode((1024, 512))
+		self.WIDTH = 0
+		self.HEIGHT = 0
+		self.window = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+		self.WIDTH, self.HEIGHT = self.window.get_size()
 		self.clock = pygame.time.Clock()
+		self.FPS = 144
+		self.currentFps = 0
 		self.deltaTime = 0
+		self.debugMode = False
+		self.ticks = 0
+		self.gravityScale = 9.81
 		# ==== Game ====
-		self.player = Entity((256, 256), 8, load_image("assets/idle.png", 2))
-		self.bullets = []
+		self.entityManager = EntityManager(self)
+		self.entityManager.init()
+		self.ground = pygame.Rect(0, self.HEIGHT-400, 1000 , 256)
+		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
 
 	def events(self):
 		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
+			if event.type == QUIT:
 				self.quit()
-			if event.type == pygame.MOUSEBUTTONDOWN:
+			if event.type == KEYDOWN:
+				if event.key == K_ESCAPE:
+					self.quit()
+				if event.key == K_F3:
+					self.debugMode = not self.debugMode
+				if event.key == K_SPACE:
+					if self.entityManager.player.grounded:	
+						self.entityManager.player.jump()
+			if event.type == MOUSEBUTTONDOWN:
 				if event.button == 1:
-					pass
-					# shoot()
+					self.entityManager.player.shoot()
 
 	def update(self):
-		self.deltaTime = self.clock.tick(60) * 0.01
+		self.deltaTime = self.clock.tick(self.FPS) * 0.001
+		self.ticks = pygame.time.get_ticks() * 0.001
+		self.currentFps = round(self.clock.get_fps())
 
-		self.player.update(self.deltaTime)
-
-		for bullet in self.bullets:
-			bullet.update(self.deltaTime)
+		self.entityManager.update(self.deltaTime, self.gravityScale)
 
 	def render(self):
 		self.window.fill((135, 135, 135))
+		pygame.draw.rect(self.window, (100,200,100), self.ground)
+		pygame.draw.rect(self.window, (70,70,70), self.ground, 10)
 
-		self.player.render(self.window)
-
-		for bullet in self.bullets:
-			bullet.render(self.window)
+		self.entityManager.render(self.window)
+	
+		if self.debugMode:
+			fps_txt = f"FPS : {self.currentFps}"
+			entity_txt = f"E : {self.entityManager.size}"
+			fps_surf = self.font.render(fps_txt, 1, (255,255,255))
+			entity_surf = self.font.render(entity_txt, 1, (255,255,255))
+			self.window.blit(fps_surf, (self.WIDTH - self.font.size(fps_txt)[0], 0))
+			self.window.blit(entity_surf, (self.WIDTH - self.font.size(entity_txt)[0], 20))
 
 		pygame.display.update()
 
