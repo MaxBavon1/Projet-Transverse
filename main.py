@@ -2,6 +2,7 @@
 from scripts.entityManager import *
 from pygame.locals import *
 import pygame
+import csv
 
 
 class GameManager:
@@ -25,6 +26,7 @@ class GameManager:
 		self.entityManager.init()
 		self.ground = pygame.Rect(0, self.HEIGHT-400, 1000 , 256)
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
+		self.tilemap = list(csv.reader(open("data/test map.csv")))
 
 	def events(self):
 		for event in pygame.event.get():
@@ -51,8 +53,13 @@ class GameManager:
 
 	def render(self):
 		self.window.fill((135, 135, 135))
-		pygame.draw.rect(self.window, (100,200,100), self.ground)
-		pygame.draw.rect(self.window, (70,70,70), self.ground, 10)
+
+		for y in range(len(self.tilemap)):
+			for x in range(len(self.tilemap[0])):
+				ID = int(self.tilemap[y][x])
+				if ID != -1:
+					tile = game_sprites["tileset"][ID]
+					self.window.blit(tile, (x * PIXEL_SIZE, y * PIXEL_SIZE))
 
 		self.entityManager.render(self.window)
 	
