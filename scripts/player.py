@@ -2,7 +2,7 @@ from .entity import *
 from .bullet import *
 import pygame
 
-class Player(Entity):
+class Player(Entity2):
     
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)

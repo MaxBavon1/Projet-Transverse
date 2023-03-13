@@ -1,8 +1,8 @@
 # ---- Development Branch (In Progress) ----
-from scripts.entityManager import *
 from pygame.locals import *
+from scripts.entityManager import *
+from scripts.level import *
 import pygame
-import csv
 
 
 class GameManager:
@@ -20,13 +20,11 @@ class GameManager:
 		self.deltaTime = 0
 		self.debugMode = False
 		self.ticks = 0
-		self.gravityScale = 9.81
-		# ==== Game ====
-		self.entityManager = EntityManager(self)
-		self.entityManager.init()
-		self.ground = pygame.Rect(0, self.HEIGHT-400, 1000 , 256)
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
-		self.tilemap = list(csv.reader(open("data/test map.csv")))
+		# ==== Game ====
+		self.gravityScale = 9.81
+		self.entityManager = EntityManager2(self)
+		self.level = Level()
 
 	def events(self):
 		for event in pygame.event.get():
@@ -54,24 +52,22 @@ class GameManager:
 	def render(self):
 		self.window.fill((135, 135, 135))
 
-		for y in range(len(self.tilemap)):
-			for x in range(len(self.tilemap[0])):
-				ID = int(self.tilemap[y][x])
-				if ID != -1:
-					tile = game_sprites["tileset"][ID]
-					self.window.blit(tile, (x * PIXEL_SIZE, y * PIXEL_SIZE))
+		self.level.render(self.window)
 
 		self.entityManager.render(self.window)
 	
 		if self.debugMode:
-			fps_txt = f"FPS : {self.currentFps}"
-			entity_txt = f"E : {self.entityManager.size}"
-			fps_surf = self.font.render(fps_txt, 1, (255,255,255))
-			entity_surf = self.font.render(entity_txt, 1, (255,255,255))
-			self.window.blit(fps_surf, (self.WIDTH - self.font.size(fps_txt)[0], 0))
-			self.window.blit(entity_surf, (self.WIDTH - self.font.size(entity_txt)[0], 20))
+			self.render_debug()
 
 		pygame.display.update()
+
+	def render_debug(self):
+		fps_txt = f"FPS : {self.currentFps}"
+		entity_txt = f"E : {self.entityManager.size}"
+		fps_surf = self.font.render(fps_txt, 1, (255,255,255))
+		entity_surf = self.font.render(entity_txt, 1, (255,255,255))
+		self.window.blit(fps_surf, (self.WIDTH - self.font.size(fps_txt)[0], 0))
+		self.window.blit(entity_surf, (self.WIDTH - self.font.size(entity_txt)[0], 20))
 
 	def run(self):
 		print("[LAUNCHING GAME...]")
