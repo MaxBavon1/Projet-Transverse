@@ -20,59 +20,35 @@ class EntityGroup(pygame.sprite.Group):
             if self.game.debugMode:
                 entiy.render_debug(surface)
 
-
 class EntityManager2:
 
     def __init__(self, game):
         super().__init__()
+        Entity2.init(self)
         self.game = game
         self.types = {
             "player" : Player,
             "bullet": Bullet,
             "slime" : Slime}
         load_game_sprites()
-        self.player = Player(None, game_sprites["player"], (512, 0), 200, tag="player")
+        self.player = Player(None, game_sprites["player"], (512, 32), 200, tag="player")
         self.ennemies = EntityGroup(self, "slime")
         self.bullets = EntityGroup(self, "bullet")
 
+    @property
+    def size(self):
+        return 1 + len(self.ennemies) + len(self.bullets)
+
     def update(self, deltaTime, gravityScale):
         self.player.update(deltaTime, gravityScale)
+        print(self.player.velocity)
         self.ennemies.update(deltaTime, gravityScale)
         self.bullets.update(deltaTime, gravityScale)
-        # ---- Collisions ----
-        # for i in range(self.size-1):
-        #     for j in range(i+1, self.size):
-        #         if self.entities[i].collide(self.entities[j]):
-        #             self.entities[i].on_collision(self.entities[j])
-        #             self.entities[j].on_collision(self.entities[i])
-        # # ---- Physics ----
-        # for entity in self.entities:
-        #     if entity.alive and entity.health > 0:
-        #         if entity.tag == "bullet":
-        #             entity.update(deltaTime, gravityScale/5)
-        #             if entity.collide_rect(self.game.ground):
-        #                 if abs(entity.velocity.y) > 0.1:
-        #                     entity.velocity.y *= -0.8
-        #                     entity.position.y = self.game.ground.y - entity.sprite.get_height() / 2
-        #                 else:
-        #                     entity.velocity.y = 0
-        #                     entity.position.y = self.game.ground.y - entity.sprite.get_height() / 2 + 1
-        #                     entity.grounded = True
-        #             else:
-        #                 entity.grounded = False
-        #         else:
-        #             entity.update(deltaTime, gravityScale)
-        #             if entity.collide_rect(self.game.ground):
-        #                 entity.velocity.y = 0
-        #                 entity.position.y = self.game.ground.y - entity.sprite.get_height() / 2 + 1
-        #                 entity.grounded = True
-        #             else:
-        #                 entity.grounded = False
-        #     else:
-        #         self.kill(entity)
-    
+
     def render(self, surface):
         self.player.render(surface)
+        if self.game.debugMode:
+            self.player.render_debug(surface)
         self.ennemies.render(surface)
         self.bullets.render(surface)
 

@@ -8,17 +8,20 @@ class Player(Entity2):
         super().__init__(*args, **kargs)
         self.jumpForce = 2.5
 
-    def update(self, deltaTime, gravityScale):
-        self.velocity.x = 0
+    def update(self, *args):
         keyboard = pygame.key.get_pressed()
+        self.velocity.x = 0
         if keyboard[pygame.K_d]:
             self.velocity.x = 1
         if keyboard[pygame.K_q]:
             self.velocity.x = -1
+
         if keyboard[pygame.K_j]:
             self.shoot()
+        if keyboard[pygame.K_SPACE] and (self.grounded):
+            self.jump()
 
-        super().update(deltaTime, gravityScale)
+        super().update(*args)
     
     def jump(self):
         self.velocity.y -= self.jumpForce

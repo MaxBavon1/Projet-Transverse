@@ -1,12 +1,12 @@
 import pygame
 import os
 
-__all__ = ["game_sprites", "load_image", "load_game_sprites", "UNIT_SIZE"]
+__all__ = ["game_sprites", "load_image", "load_game_sprites", "TILE_SIZE"]
 
 PATH = os.getcwd()
 PIXEL_RATIO = 2
 PIXEL_UNIT = 16
-UNIT_SIZE = PIXEL_RATIO * PIXEL_UNIT
+TILE_SIZE = PIXEL_RATIO * PIXEL_UNIT
 game_sprites = {}
 
 def load_image(path, size=PIXEL_RATIO, alpha=True):

@@ -5,10 +5,10 @@ class Entity2(pygame.sprite.Sprite):
     def __init__(self, group, sprite, pos, speed, health=1, tag="Entity"):
         super().__init__(group) if group else super().__init__()
         self.sprite = sprite
-        self.position = pygame.Vector2(pos)
+        # self.position = pygame.Vector2(pos)
         self.velocity = pygame.Vector2()
         self.rect = sprite.get_rect()
-        self.rect.center = pos
+        self.rect.topleft = pos
         self.speed = speed
         self.maxHealth = health
         self.health = self.maxHealth
@@ -20,22 +20,39 @@ class Entity2(pygame.sprite.Sprite):
         Entity2.entityManager = entityManager
 
     def update(self, deltaTime, gravityScale):
-        if not self.grounded:
-            self.velocity.y += gravityScale * deltaTime
+        self.rect.x += self.velocity.x * self.speed * deltaTime
+        # ---- Horizontal Collisions ----
+        for tile in self.entityManager.game.level.collide(self):
+            if self.velocity.x > 0:
+                self.rect.right = tile.left
+            if self.velocity.x < 0:
+                self.rect.left = tile.right
 
-        self.position += self.velocity * self.speed * deltaTime
-        self.rect.center = self.position
+        self.velocity.y += gravityScale * deltaTime
+        self.rect.y += self.velocity.y * self.speed * deltaTime
+        # ---- Vertical Collisions ----
+        for tile in self.entityManager.game.level.collide(self):
+            if self.velocity.y > 0:
+                self.rect.bottom = tile.top
+                self.velocity.y = 0
+                self.grounded = True
+            if self.velocity.y < 0:
+                self.rect.top = tile.bottom
+                self.velocity.y = 0
 
+        if (self.grounded and self.velocity.y != 0):
+            self.grounded = False
+ 
     def render(self, surface):
         if self.rect.colliderect(surface.get_rect()):
             surface.blit(self.sprite, self.rect.topleft)
     
     def render_debug(self, surface):
         # HitBox
-        pygame.draw.rect(surface, (255,0,0), self.get_rect(), 2)
+        pygame.draw.rect(surface, (255,0,0), self.rect, 2)
         # Velocity
         movement = self.velocity * 50
-        pygame.draw.aaline(surface, (0,0,255), self.position, self.position + movement, 2)
+        pygame.draw.aaline(surface, (0,0,255), self.rect.center, pygame.Vector2(self.rect.center) + movement, 2)
     
     def on_collision(self, entity):
         pass
