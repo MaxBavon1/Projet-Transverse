@@ -1,7 +1,7 @@
 from .entity import *
 import pygame
 
-class Bullet(Entity):
+class Bullet(Entity2):
     
     lifeSpan = 4
     bulletForce = 1000

@@ -4,6 +4,54 @@ from .player import *
 from .bullet import *
 from .slime import *
 
+class EntityGroup(pygame.sprite.Group):
+
+    def __init__(self, entityManager, entityType, *entites):
+        super().__init__(*entites)
+        self.entityManager = entityManager
+        self.entityType = entityType
+
+    def spawn(self, *args, **kwargs):
+        return self.entityManager.types[self.entityType](self, game_sprites[self.entityType], *args, tag=self.entityType, **kwargs)
+
+    def render(self, surface):
+        for entiy in self:
+            entiy.render(surface)
+            if self.game.debugMode:
+                entiy.render_debug(surface)
+
+class EntityManager2:
+
+    def __init__(self, game):
+        super().__init__()
+        Entity2.init(self)
+        self.game = game
+        self.types = {
+            "player" : Player,
+            "bullet": Bullet,
+            "slime" : Slime}
+        load_game_sprites()
+        self.player = Player(None, game_sprites["player"], (512, 32), 0, tag="player")
+        self.ennemies = EntityGroup(self, "slime")
+        self.bullets = EntityGroup(self, "bullet")
+
+    @property
+    def size(self):
+        return 1 + len(self.ennemies) + len(self.bullets)
+
+    def update(self, deltaTime, gravityScale):
+        self.player.update(deltaTime, gravityScale)
+        self.ennemies.update(deltaTime, gravityScale)
+        self.bullets.update(deltaTime, gravityScale)
+
+    def render(self, surface):
+        self.player.render(surface)
+        if self.game.debugMode:
+            self.player.render_debug(surface)
+        self.ennemies.render(surface)
+        self.bullets.render(surface)
+
+
 class EntityManager:
 
     def __init__(self, game):
