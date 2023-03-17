@@ -31,7 +31,7 @@ class EntityManager2:
             "bullet": Bullet,
             "slime" : Slime}
         load_game_sprites()
-        self.player = Player(None, game_sprites["player"], (512, 32), 200, tag="player")
+        self.player = Player(None, game_sprites["player"], (512, 32), 0, tag="player")
         self.ennemies = EntityGroup(self, "slime")
         self.bullets = EntityGroup(self, "bullet")
 
@@ -41,7 +41,6 @@ class EntityManager2:
 
     def update(self, deltaTime, gravityScale):
         self.player.update(deltaTime, gravityScale)
-        print(self.player.velocity)
         self.ennemies.update(deltaTime, gravityScale)
         self.bullets.update(deltaTime, gravityScale)
 
