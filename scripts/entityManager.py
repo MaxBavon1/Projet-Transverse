@@ -34,12 +34,12 @@ class EntityManager:
             "slime" : Slime}
         load_game_sprites()
         Entity.init(self)
-        self.player = Player(None, game_sprites["player"], (512, 32), 0, tag="player")
+        self.player = Player(None, game_sprites["player"], (750, 400), 0, tag="player")
         self.ennemies = EntityGroup(self, "slime")
         self.bullets = EntityGroup(self, "bullet")
-        self.ennemies.spawn((0, 0), self.player, speed=100, health=3)
-        self.ennemies.spawn((600, 0), self.player, speed=100, health=5)
-        self.ennemies.spawn((800, 0), self.player, speed=100, health=1)
+        self.ennemies.spawn((700, 400), self.player, speed=75, health=3)
+        self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
+        self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
 
     @property
     def size(self):
@@ -64,3 +64,5 @@ class EntityManager:
             bullet.destroy()
             for slime in slimes:
                 slime.health -= bullet.damage
+
+        self.player.health -= len(pygame.sprite.spritecollide(self.player, self.ennemies, False))

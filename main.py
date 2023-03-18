@@ -5,7 +5,6 @@ from scripts.level import *
 import pygame
 import time
 
-print("test")
 
 class GameManager:
 
@@ -60,7 +59,7 @@ class GameManager:
 		self.level.render(self.window)
 
 		self.entityManager.render(self.window)
-	
+
 		if self.debugMode:
 			self.render_debug()
 
