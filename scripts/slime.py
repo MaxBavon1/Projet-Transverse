@@ -1,15 +1,17 @@
 from .entity import *
 import pygame
 
-class Slime(Entity2):
+class Slime(Entity):
 
-    def __init__(self, target, *args, **kargs):
-        super().__init__(*args, **kargs)
-        self.target = target
-    
+    def __init__(self, *args, **kwargs):
+        self.target = args[-1]
+        args = list(args)
+        args.pop(-1)
+        super().__init__(*args, **kwargs)
+
     def update(self, deltaTime, gravityScale):
-        movement = (pygame.Vector2self.target.rect.center - self.rect.center).normalize()
-        self.velocity.x = movement.x
+        movement = pygame.Vector2(self.target.position - self.position).normalize()
+        self.velocity.x = movement.x * self.speed
         super().update(deltaTime, gravityScale)
 
     def on_collision(self, entity):

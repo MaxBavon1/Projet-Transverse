@@ -2,7 +2,8 @@ from .entity import *
 from .bullet import *
 import pygame
 
-class Player(Entity2):
+
+class Player(Entity):
     
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
@@ -13,9 +14,9 @@ class Player(Entity2):
         keyboard = pygame.key.get_pressed()
         self.velocity.x = 0
         if keyboard[pygame.K_d]:
-            self.velocity.x = 1
+            self.velocity.x = self.speed
         if keyboard[pygame.K_q]:
-            self.velocity.x = -1
+            self.velocity.x = -self.speed
 
         if keyboard[pygame.K_j]:
             self.shoot()
@@ -29,4 +30,4 @@ class Player(Entity2):
     
     def shoot(self):
         direction = pygame.Vector2(pygame.mouse.get_pos()) - self.position
-        self.manager.spawn("bullet", self.position, Bullet.bulletForce, vel=direction.normalize())
+        self.entityManager.bullets.spawn(self.position, vel=direction.normalize())
