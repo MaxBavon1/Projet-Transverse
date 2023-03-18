@@ -5,6 +5,8 @@ from scripts.level import *
 import pygame
 import time
 
+print("test")
+
 class GameManager:
 
 	def __init__(self) -> None:
