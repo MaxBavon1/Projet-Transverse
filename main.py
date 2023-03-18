@@ -24,7 +24,7 @@ class GameManager:
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
 		# ==== Game ====
 		self.gravityScale = 9.81
-		self.entityManager = EntityManager2(self)
+		self.entityManager = EntityManager(self)
 		self.level = Level(self)
 
 	def events(self):
