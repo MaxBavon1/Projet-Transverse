@@ -5,7 +5,6 @@ from scripts.level import *
 import pygame
 import time
 
-
 class GameManager:
 
 	def __init__(self) -> None:
@@ -18,8 +17,8 @@ class GameManager:
 		self.clock = pygame.time.Clock()
 		self.FPS = 144
 		self.currentFps = 0
-		self.lastFrame = 0
 		self.deltaTime = 0
+		self.lastFrame = 0
 		self.debugMode = True
 		self.ticks = 0
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
@@ -46,7 +45,7 @@ class GameManager:
 
 	def update(self):
 		self.clock.tick(self.FPS)
-		self.deltaTime = (time.time() - self.lastFrame)
+		self.deltaTime =  time.time() - self.lastFrame
 		self.lastFrame = time.time()
 		self.ticks = pygame.time.get_ticks() * 0.001
 		self.currentFps = round(self.clock.get_fps())
