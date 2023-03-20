@@ -40,6 +40,9 @@ class EntityManager:
         self.ennemies.spawn((700, 400), self.player, speed=75, health=3)
         self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
         self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
+        self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
+        self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
+        self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
 
     @property
     def size(self):

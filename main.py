@@ -19,7 +19,7 @@ class GameManager:
 		self.currentFps = 0
 		self.deltaTime = 0
 		self.lastFrame = 0
-		self.debugMode = True
+		self.debugMode = False
 		self.ticks = 0
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
 		# ==== Game ====
