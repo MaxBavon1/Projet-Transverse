@@ -36,7 +36,7 @@ class GameManager:
 					self.quit()
 				if event.key == K_F3:
 					self.debugMode = not self.debugMode
-				if event.key == K_SPACE:
+				if event.key == K_SPACE or event.key == K_UP:
 					if self.entityManager.player.grounded:	
 						self.entityManager.player.jump()
 			if event.type == MOUSEBUTTONDOWN:

@@ -17,14 +17,14 @@ class Player(Entity):
 
         keyboard = pygame.key.get_pressed()
         self.velocity.x = 0
-        if keyboard[pygame.K_d]:
+        if keyboard[pygame.K_d] or keyboard[pygame.K_RIGHT]:
             self.velocity.x = self.speed
-        if keyboard[pygame.K_q]:
+        if keyboard[pygame.K_q] or keyboard[pygame.K_LEFT]:
             self.velocity.x = -self.speed
 
         if keyboard[pygame.K_j]:
             self.shoot()
-        if keyboard[pygame.K_UP]:
+        if keyboard[pygame.K_LSHIFT]:
             self.velocity.y -= 20
 
         super().update(*args)
