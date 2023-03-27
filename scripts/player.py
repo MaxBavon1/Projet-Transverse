@@ -10,6 +10,7 @@ class Player(Entity):
         self.jumpForce = 475
         self.speed = 200
         self.health = 300
+        self.flyingSpeed = 2500
 
     def update(self, *args):
         if self.health <= 0:
@@ -25,7 +26,7 @@ class Player(Entity):
         if keyboard[pygame.K_j]:
             self.shoot()
         if keyboard[pygame.K_LSHIFT]:
-            self.velocity.y -= 20
+            self.velocity.y -= self.flyingSpeed * args[0]
 
         super().update(*args)
     
@@ -33,11 +34,12 @@ class Player(Entity):
         self.velocity.y -= self.jumpForce
     
     def shoot(self):
-        direction = pygame.Vector2(pygame.mouse.get_pos()) - self.position
+        cursor = self.entityManager.game.camera.screen_to_world_point(pygame.mouse.get_pos())
+        direction = pygame.Vector2(cursor) - self.position
         self.entityManager.bullets.spawn(self.position, vel=direction.normalize())
     
-    def render(self, surface):
-        super().render(surface)
+    def render(self, surface, camera):
+        super().render(surface, camera.offset, camera.rect)
 
         health_txt = f"HP : {self.health}"
         health_surf = self.entityManager.game.font.render(health_txt, 1, (255,255,255))

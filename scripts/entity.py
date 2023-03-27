@@ -76,7 +76,7 @@ class Entity(pygame.sprite.Sprite):
         self.rect.centerx = self.position.x
         self.horizontal_collision(level)
 
-        self.velocity.y += gravityScale
+        self.velocity.y += gravityScale * deltaTime
         self.position.y += self.velocity.y * deltaTime
         self.rect.centery = math.ceil(self.position.y)
         self.vertical_collision(level)
@@ -84,17 +84,21 @@ class Entity(pygame.sprite.Sprite):
         if (self.grounded and self.velocity.y != 0):
             self.grounded = False
 
-    def render(self, surface):
-        if self.rect.colliderect(surface.get_rect()):
-            surface.blit(self.sprite, self.rect.topleft)
+    def render(self, surface, offset, screen):
+        if self.rect.colliderect(screen):
+            surface.blit(self.sprite, pygame.Vector2(self.rect.topleft) - offset)
+        else:
+            if self.tag == "bullet":
+                print("out of screen !")
     
-    def render_debug(self, surface):
+    def render_debug(self, surface, offset):
         # HitBox
-        if self.grounded: pygame.draw.rect(surface, (0,255,0), self.rect, 2)
-        else: pygame.draw.rect(surface, (255,0,0), self.rect, 2)
+        hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
+        if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 2)
+        else: pygame.draw.rect(surface, (255,0,0), hitbox, 2)
         # Velocity
         movement = self.velocity * 0.2
-        pygame.draw.aaline(surface, (0,0,255), self.position, self.position + movement, 2)
+        pygame.draw.aaline(surface, (0,0,255), self.position - offset, self.position + movement - offset, 2)
     
     def destroy(self):
         self.kill()

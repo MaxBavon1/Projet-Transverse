@@ -4,8 +4,8 @@ import pygame
 class Bullet(Entity):
     
     lifeSpan = 4
-    bulletForce = 1000
-    bounce = (0.85, 0.65)
+    bulletForce = 800
+    bounce = (0.75, 0.65)
     bulletDamage = 1
 
     def __init__(self, *args, **kwargs):
@@ -69,7 +69,7 @@ class Bullet(Entity):
         self.rect.centerx = self.position.x
         self.horizontal_collision(level)
 
-        self.velocity.y += gravityScale
+        self.velocity.y += gravityScale * deltaTime
         self.position.y += self.velocity.y * deltaTime
         self.rect.centery = self.position.y
         self.vertical_collision(level)

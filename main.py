@@ -1,11 +1,12 @@
 # ---- Development Branch (In Progress) ----
 from pygame.locals import *
+from scripts.camera import *
 from scripts.entityManager import *
 from scripts.level import *
 import pygame
 import time
 
-#quoicoubeh
+#quoicoubeh dd
 
 class GameManager:
 
@@ -25,8 +26,9 @@ class GameManager:
 		self.ticks = 0
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
 		# ==== Game ====
-		self.gravityScale = 9.81
+		self.gravityScale = 1500
 		self.entityManager = EntityManager(self)
+		self.camera = Camera(self, self.entityManager.player)
 		self.level = Level(self)
 
 	def events(self):
@@ -53,13 +55,14 @@ class GameManager:
 		self.currentFps = round(self.clock.get_fps())
 
 		self.entityManager.update(self.deltaTime, self.gravityScale)
+		self.camera.update(self.deltaTime)
 
 	def render(self):
 		self.window.fill((135, 135, 135))
 
-		self.level.render(self.window)
+		self.level.render(self.window, self.camera)
 
-		self.entityManager.render(self.window)
+		self.entityManager.render(self.window, self.camera)
 
 		if self.debugMode:
 			self.render_debug()
@@ -81,6 +84,8 @@ class GameManager:
 		vel_surf = self.font.render(vel_txt, 1, (255,255,255))
 		self.window.blit(pos_surf, (self.WIDTH - self.font.size(pos_txt)[0], 40))
 		self.window.blit(vel_surf, (self.WIDTH - self.font.size(vel_txt)[0], 60))
+
+		self.camera.render_debug(self.window)
 
 	def run(self):
 		print("[LAUNCHING GAME...]")

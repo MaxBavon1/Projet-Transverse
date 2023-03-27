@@ -16,11 +16,11 @@ class EntityGroup(pygame.sprite.Group):
         entity = self.entityManager.types[self.entityType](self, game_sprites[self.entityType], *args, **kwargs, tag=self.entityType)
         self.add(entity)
 
-    def render(self, surface):
+    def render(self, surface, camera):
         for entiy in self:
-            entiy.render(surface)
+            entiy.render(surface, camera.offset, camera.rect)
             if self.entityManager.game.debugMode:
-                entiy.render_debug(surface)
+                entiy.render_debug(surface, camera.offset)
 
 
 class EntityManager:
@@ -55,12 +55,12 @@ class EntityManager:
 
         self.handle_collisions()
 
-    def render(self, surface):
-        self.player.render(surface)
+    def render(self, surface, camera):
+        self.player.render(surface, camera)
         if self.game.debugMode:
-            self.player.render_debug(surface)
-        self.ennemies.render(surface)
-        self.bullets.render(surface)
+            self.player.render_debug(surface, camera.offset)
+        self.ennemies.render(surface, camera)
+        self.bullets.render(surface, camera)
     
     def handle_collisions(self):
         for bullet, slimes in pygame.sprite.groupcollide(self.bullets, self.ennemies, False, False).items():
