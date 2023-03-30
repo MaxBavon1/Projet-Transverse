@@ -11,6 +11,7 @@ class Player(Entity):
         self.speed = 200
         self.health = 300
         self.flyingSpeed = 2500
+        self.recoil = 50
 
     def update(self, *args):
         if self.health <= 0:
@@ -23,7 +24,7 @@ class Player(Entity):
         if keyboard[pygame.K_q] or keyboard[pygame.K_LEFT]:
             self.velocity.x = -self.speed
 
-        if keyboard[pygame.K_j]:
+        if keyboard[pygame.K_TAB]:
             self.shoot()
         if keyboard[pygame.K_LSHIFT]:
             self.velocity.y -= self.flyingSpeed * args[0]
@@ -35,9 +36,9 @@ class Player(Entity):
     
     def shoot(self):
         cursor = self.entityManager.game.camera.screen_to_world_point(pygame.mouse.get_pos())
-        direction = pygame.Vector2(cursor) - self.position
+        direction = (pygame.Vector2(cursor) - self.position)
         self.entityManager.bullets.spawn(self.position, vel=direction.normalize())
-    
+
     def render(self, surface, camera):
         super().render(surface, camera.offset, camera.rect)
 

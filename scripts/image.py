@@ -29,7 +29,8 @@ def load_tileset(path, pxunit=PIXEL_UNIT):
 def load_game_sprites():
     global game_sprites
     game_sprites["player"] = load_image("assets/idle.png")
-    game_sprites["bullet"] = load_image("assets/bulletd.png")
+    game_sprites["bullet"] = load_image("assets/bulleta.png")
     game_sprites["slime"] = load_image("assets/slime2.png")
     game_sprites["tileset"] = load_tileset("assets/maps/tileset forest.png")
+    game_sprites["cursor"] = load_image("assets/3crosshair.png")
     return game_sprites

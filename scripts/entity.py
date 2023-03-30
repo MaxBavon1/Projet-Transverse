@@ -87,10 +87,7 @@ class Entity(pygame.sprite.Sprite):
     def render(self, surface, offset, screen):
         if self.rect.colliderect(screen):
             surface.blit(self.sprite, pygame.Vector2(self.rect.topleft) - offset)
-        else:
-            if self.tag == "bullet":
-                print("out of screen !")
-    
+ 
     def render_debug(self, surface, offset):
         # HitBox
         hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
