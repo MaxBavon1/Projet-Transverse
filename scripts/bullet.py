@@ -4,7 +4,7 @@ import pygame
 class Bullet(Entity):
     
     lifeSpan = 15
-    bulletForce = 1900 #800
+    bulletForce = 800
     bounce = (0.75, 0.65)
     bulletDamage = 1
 

@@ -31,11 +31,11 @@ class EntityManager:
         self.types = {
             "player" : Player,
             "bullet": Bullet,
-            "slime" : Slime}
-        load_game_sprites()
+            "bat" : Slime}
+        load_game_sprites2()
         Entity.init(self)
         self.player = Player(None, game_sprites["player"], (750, 400), 0, tag="player")
-        self.ennemies = EntityGroup(self, "slime")
+        self.ennemies = EntityGroup(self, "bat")
         self.bullets = EntityGroup(self, "bullet")
         self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
         self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)

@@ -7,7 +7,7 @@ from scripts.ui import *
 import pygame
 import time
 
-#quoicoubeh dd
+#quoicoubeh
 
 class GameManager:
 
@@ -35,8 +35,7 @@ class GameManager:
 		self.entityManager = EntityManager(self)
 		self.camera = Camera(self, self.entityManager.player)
 		self.level = Level(self)
-		# ==== UI ====
-		self.button = Button((0, 0), (200, 200), "Hello")
+		self.UIManager = UIManager(self)
 
 	def events(self):
 		# --- Touch Keys ---
@@ -50,16 +49,13 @@ class GameManager:
 					self.debugMode = not self.debugMode
 				if event.key == K_F5:
 					self.fixedUpdate = not self.fixedUpdate
-				# if event.key == K_F6:
-				# 	self.FPS -= 10
-				# if event.key == K_F7:
-				# 	self.FPS += 10
 				if event.key == K_SPACE or event.key == K_UP:
 					if self.entityManager.player.grounded:	
 						self.entityManager.player.jump()
 			if event.type == MOUSEBUTTONDOWN:
 				if event.button == 1:	
 					self.entityManager.player.shoot()
+					self.UIManager.clicked()
 		
 		# --- Hold Keys ---
 		keyboard = pygame.key.get_pressed()
@@ -79,6 +75,7 @@ class GameManager:
 
 		self.entityManager.update(self.deltaTime, self.gravityScale)
 		self.camera.update(self.deltaTime)
+		self.UIManager.update()
 
 	def render(self):
 		self.window.fill((135, 135, 135))
@@ -92,7 +89,7 @@ class GameManager:
 		if self.fixedUpdate:
 			self.render_update_mode()
 		
-		self.button.update()
+		self.UIManager.render(self.window)
 
 		self.window.blit(game_sprites["cursor"], self.mousePos - (pygame.Vector2(game_sprites["cursor"].get_size()) / 2))
 
@@ -113,7 +110,6 @@ class GameManager:
 		vel_surf = self.font.render(vel_txt, 1, (255,255,255))
 		self.window.blit(pos_surf, (self.WIDTH - self.font.size(pos_txt)[0], 40))
 		self.window.blit(vel_surf, (self.WIDTH - self.font.size(vel_txt)[0], 60))
-		self.button.render(self.window)
 
 		self.camera.render_debug(self.window)
 
