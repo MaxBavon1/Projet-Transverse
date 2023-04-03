@@ -7,7 +7,7 @@ class Slime(Entity):
         self.target = args[-1]
         args = list(args)
         args.pop(-1)
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, anim_speed=15, **kwargs)
 
     def update(self, deltaTime, gravityScale):
         movement = pygame.Vector2(self.target.position - self.position).normalize()

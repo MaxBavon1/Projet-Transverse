@@ -7,21 +7,51 @@ class Player(Entity):
     
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
-        self.jumpForce = 475
-        self.speed = 200
+        self.anim_speed = 8
+        self.jumpForce = 600
+        self.speed = 250
+        self.health = 300
+        self.flyingSpeed = 2500
+        self.recoil = 50
+        self.play("walk_right")
+    
+    def animate(self):
+        if self.velocity.y == 0:
+            if self.velocity.x > 0:
+                self.play("walk_right")
+            elif self.velocity.x < 0:
+                self.play("walk_left")
+            else:
+                self.play("idle_right")
+        else:
+            if self.velocity.y > 0:
+                if self.velocity.x >= 0:
+                    self.play("fall_right")
+                else:
+                    self.play("fall_left")
+            elif self.velocity.y < 0:
+                if self.velocity.x >= 0:
+                    self.play("jump_right")
+                else:
+                    self.play("jump_left")
+
+        super().animate()
 
     def update(self, *args):
+        if self.health <= 0:
+            self.entityManager.game.quit()
+
         keyboard = pygame.key.get_pressed()
         self.velocity.x = 0
-        if keyboard[pygame.K_d]:
+        if keyboard[pygame.K_d] or keyboard[pygame.K_RIGHT]:
             self.velocity.x = self.speed
-        if keyboard[pygame.K_q]:
+        if keyboard[pygame.K_q] or keyboard[pygame.K_LEFT]:
             self.velocity.x = -self.speed
 
-        if keyboard[pygame.K_j]:
+        if keyboard[pygame.K_TAB]:
             self.shoot()
-        if keyboard[pygame.K_UP]:
-            self.velocity.y -= 20
+        if keyboard[pygame.K_LSHIFT]:
+            self.velocity.y -= self.flyingSpeed * args[0]
 
         super().update(*args)
     
@@ -29,5 +59,13 @@ class Player(Entity):
         self.velocity.y -= self.jumpForce
     
     def shoot(self):
-        direction = pygame.Vector2(pygame.mouse.get_pos()) - self.position
+        cursor = self.entityManager.game.camera.screen_to_world_point(pygame.mouse.get_pos())
+        direction = (pygame.Vector2(cursor) - self.position)
         self.entityManager.bullets.spawn(self.position, vel=direction.normalize())
+
+    def render(self, surface, camera):
+        super().render(surface, camera.offset, camera.rect)
+
+        health_txt = f"HP : {self.health}"
+        health_surf = self.entityManager.game.font.render(health_txt, 1, (255,255,255))
+        surface.blit(health_surf, (0, 0))

@@ -6,11 +6,12 @@ class Level:
 
     def __init__(self, game):
         self.game = game
+        self.tiles = game.assets.tiles
         self.tilemap = list(csv.reader(open("data/test map.csv")))
         self.level_width = len(self.tilemap[0])
         self.level_height = len(self.tilemap)
-        self.tileset = game_sprites["tileset"]
-        self.border = pygame.Rect(0, 0, game.WIDTH, game.HEIGHT)
+        self.tileset = self.tiles["forest"]
+        self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
 
     def collide(self, entity, range_=2):
         tileX = int(entity.rect.x // TILE_SIZE)
@@ -26,22 +27,26 @@ class Level:
                             tiles.append(tile)
         return tiles
 
-    def render(self, surface):
+    def render(self, surface, camera):
+        offset, screen = camera.offset, camera.rect
         for y in range(len(self.tilemap)):
             for x in range(len(self.tilemap[0])):
                 ID = int(self.tilemap[y][x])
                 if ID != -1:
-                    tile = game_sprites["tileset"][ID]
-                    surface.blit(tile, (x * TILE_SIZE, y * TILE_SIZE))
+                    tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
+                    if screen.colliderect(pygame.Rect(tile_pos, (TILE_SIZE, TILE_SIZE))):
+                        tile = self.tiles["forest"][ID]
+                        surface.blit(tile, tile_pos - offset)
 
         if self.game.debugMode:
-            self.render_debug(surface)
+            self.render_debug(surface, offset)
 
-    def render_debug(self, surface):
+    def render_debug(self, surface, offset):
         for y in range(len(self.tilemap)):
             for x in range(len(self.tilemap[0])):
                 ID = int(self.tilemap[y][x])
                 if ID > 10:
-                    pygame.draw.rect(surface, (0,255,0), (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE), 1)
+                    pygame.draw.rect(surface, (0,255,0), (x * TILE_SIZE - offset.x, y * TILE_SIZE - offset.y, TILE_SIZE, TILE_SIZE), 1)
         
-        pygame.draw.rect(surface, (255,0,0), self.border, 2)
+        border = pygame.Rect(self.border.x - offset.x, self.border.y - offset.y, self.border.w, self.border.h)
+        pygame.draw.rect(surface, (255,0,0), border, 2)

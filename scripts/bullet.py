@@ -1,20 +1,22 @@
 from .entity import *
 import pygame
 
-class Bullet(Entity):
+class Bullet(StaticEntity):
     
-    lifeSpan = 4
-    bulletForce = 1000
-    bounce = (0.85, 0.65)
+    lifeSpan = 15
+    bulletForce = 1200
+    bounce = (0.75, 0.65)
     bulletDamage = 1
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.velocity *= self.bulletForce
         self.spawnTime = self.entityManager.game.ticks
+        self.rebounce = self.lifeSpan
         self.damage = self.bulletDamage
 
     def bounce_off(self, axis=1):
+        self.rebounce -= 1
         self.velocity.x *= axis * self.bounce[0]
         self.velocity.y *= -axis * self.bounce[1]
 
@@ -61,7 +63,7 @@ class Bullet(Entity):
                 self.bounce_off(1)
 
     def update(self, deltaTime, gravityScale):
-        if (self.entityManager.game.ticks - self.spawnTime) > self.lifeSpan:
+        if (self.entityManager.game.ticks - self.spawnTime) > self.lifeSpan or self.rebounce <= 0:
             self.destroy()
 
         level = self.entityManager.game.level
@@ -69,7 +71,7 @@ class Bullet(Entity):
         self.rect.centerx = self.position.x
         self.horizontal_collision(level)
 
-        self.velocity.y += gravityScale
+        self.velocity.y += gravityScale * deltaTime
         self.position.y += self.velocity.y * deltaTime
         self.rect.centery = self.position.y
         self.vertical_collision(level)
