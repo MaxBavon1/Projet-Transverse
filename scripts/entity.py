@@ -1,29 +1,40 @@
 import pygame
 import math
 
+__all__ = ["StaticEntity", "Entity"]
 
-class Entity(pygame.sprite.Sprite):
+class StaticEntity(pygame.sprite.Sprite):
 
     entityManager = None
 
     def __init__(self, group, sprite, pos, speed=1, vel=0, health=1, damage=1, tag="Entity"):
         super().__init__(group) if group else super().__init__()
-        self.sprite = sprite
+        # Physics
         self.position = pygame.Vector2(pos)
         self.velocity = pygame.Vector2(vel)
         self.rect = sprite.get_rect()
         self.rect.center = self.position
         self.speed = speed
+        self.grounded = False
+        # Attributes
         self.maxHealth = health
         self.health = self.maxHealth
         self.damage = damage
-        self.grounded = False
         self.tag = tag
-    
+        self.set_sprite(sprite)
+
     @classmethod
     def init(cls, manager):
-        Entity.entityManager = manager
+        cls.entityManager = manager
     
+    def set_sprite(self, sprite):
+        self.sprite = sprite
+        middle, bottom = self.rect.centerx, self.rect.bottom
+        self.rect.size = sprite.get_size()
+        self.rect.centerx, self.rect.bottom = middle, bottom
+        self.position.x, self.position.y = self.rect.center
+        self.vertical_collision(self.entityManager.game.level)
+
     def horizontal_collision(self, level):
         # ---- Horizontal Collisions ----
         if self.rect.left < level.border.left: # Border Left
@@ -93,9 +104,12 @@ class Entity(pygame.sprite.Sprite):
         hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
         if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 2)
         else: pygame.draw.rect(surface, (255,0,0), hitbox, 2)
+        # Position
+        pygame.draw.circle(surface, (0, 0, 0), self.position - offset, 2)
         # Velocity
         movement = self.velocity * 0.2
         pygame.draw.aaline(surface, (0,0,255), self.position - offset, self.position + movement - offset, 2)
+
     
     def destroy(self):
         self.kill()
@@ -106,3 +120,28 @@ class Entity(pygame.sprite.Sprite):
 
     def on_death(self):
         pass
+
+
+class Entity(StaticEntity):
+     
+    def __init__(self, group, animations, pos, speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="StaticEntity"):
+        self.animations = animations
+        self.current_anim = list(animations.keys())[0]
+        self.frame = 0
+        self.anim_speed = anim_speed
+        super().__init__(group, animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
+
+    def play(self, animation):
+        if self.current_anim != animation:
+            self.frame = 0
+            self.current_anim = animation
+            self.set_sprite(self.animations[self.current_anim][0])
+
+    def animate(self):
+        self.frame += 1
+        self.frame %= len(self.animations[self.current_anim]) * self.anim_speed
+        self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
+
+    def update(self, deltaTime, gravityScale):
+        self.animate()
+        super().update(deltaTime, gravityScale)

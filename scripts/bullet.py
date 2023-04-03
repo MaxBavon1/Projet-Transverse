@@ -1,10 +1,10 @@
 from .entity import *
 import pygame
 
-class Bullet(Entity):
+class Bullet(StaticEntity):
     
     lifeSpan = 15
-    bulletForce = 800
+    bulletForce = 1200
     bounce = (0.75, 0.65)
     bulletDamage = 1
 

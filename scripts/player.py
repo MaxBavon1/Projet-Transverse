@@ -7,11 +7,35 @@ class Player(Entity):
     
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
-        self.jumpForce = 475
-        self.speed = 200
+        self.anim_speed = 8
+        self.jumpForce = 600
+        self.speed = 250
         self.health = 300
         self.flyingSpeed = 2500
         self.recoil = 50
+        self.play("walk_right")
+    
+    def animate(self):
+        if self.velocity.y == 0:
+            if self.velocity.x > 0:
+                self.play("walk_right")
+            elif self.velocity.x < 0:
+                self.play("walk_left")
+            else:
+                self.play("idle_right")
+        else:
+            if self.velocity.y > 0:
+                if self.velocity.x >= 0:
+                    self.play("fall_right")
+                else:
+                    self.play("fall_left")
+            elif self.velocity.y < 0:
+                if self.velocity.x >= 0:
+                    self.play("jump_right")
+                else:
+                    self.play("jump_left")
+
+        super().animate()
 
     def update(self, *args):
         if self.health <= 0:

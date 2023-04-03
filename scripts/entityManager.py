@@ -13,7 +13,7 @@ class EntityGroup(pygame.sprite.Group):
         self.entityType = entityType
 
     def spawn(self, *args, **kwargs):
-        entity = self.entityManager.types[self.entityType](self, game_sprites[self.entityType], *args, **kwargs, tag=self.entityType)
+        entity = self.entityManager.types[self.entityType](self, self.entityManager.assets[self.entityType], *args, **kwargs, tag=self.entityType)
         self.add(entity)
 
     def render(self, surface, camera):
@@ -28,21 +28,20 @@ class EntityManager:
     def __init__(self, game):
         super().__init__()
         self.game = game
+        self.assets = game.assets.sprites
         self.types = {
-            "player" : Player,
             "bullet": Bullet,
-            "bat" : Slime}
-        load_game_sprites2()
-        Entity.init(self)
-        self.player = Player(None, game_sprites["player"], (750, 400), 0, tag="player")
-        self.ennemies = EntityGroup(self, "bat")
+            "bat_anim" : Slime}
+        StaticEntity.init(self)
+        self.player = Player(None, self.assets["player_anim"], (750, 400), 0, tag="player")
+        self.ennemies = EntityGroup(self, "bat_anim")
         self.bullets = EntityGroup(self, "bullet")
-        self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
-        self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
-        self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
-        self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
-        self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
-        self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
+        # self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
+        # self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
+        # self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
+        # self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
+        # self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
+        # self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
 
     @property
     def size(self):

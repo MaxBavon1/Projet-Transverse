@@ -31,10 +31,11 @@ class GameManager:
 		self.font = pygame.font.Font("assets/fonts/rubik.ttf", 20)
 		pygame.mouse.set_visible(False)
 		# ==== Game ====
-		self.gravityScale = 1500
+		self.gravityScale = 1700
+		self.assets = Assets(self)
+		self.level = Level(self)
 		self.entityManager = EntityManager(self)
 		self.camera = Camera(self, self.entityManager.player)
-		self.level = Level(self)
 		self.UIManager = UIManager(self)
 
 	def events(self):
@@ -91,7 +92,7 @@ class GameManager:
 		
 		self.UIManager.render(self.window)
 
-		self.window.blit(game_sprites["cursor"], self.mousePos - (pygame.Vector2(game_sprites["cursor"].get_size()) / 2))
+		self.window.blit(self.assets.ui["cursor"], self.mousePos - (pygame.Vector2(self.assets.ui["cursor"].get_size()) / 2))
 
 		pygame.display.update()
 

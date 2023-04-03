@@ -6,10 +6,11 @@ class Level:
 
     def __init__(self, game):
         self.game = game
+        self.tiles = game.assets.tiles
         self.tilemap = list(csv.reader(open("data/test map.csv")))
         self.level_width = len(self.tilemap[0])
         self.level_height = len(self.tilemap)
-        self.tileset = game_sprites["tileset"]
+        self.tileset = self.tiles["forest"]
         self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
 
     def collide(self, entity, range_=2):
@@ -34,7 +35,7 @@ class Level:
                 if ID != -1:
                     tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
                     if screen.colliderect(pygame.Rect(tile_pos, (TILE_SIZE, TILE_SIZE))):
-                        tile = game_sprites["tileset"][ID]
+                        tile = self.tiles["forest"][ID]
                         surface.blit(tile, tile_pos - offset)
 
         if self.game.debugMode:

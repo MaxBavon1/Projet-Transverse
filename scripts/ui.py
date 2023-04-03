@@ -4,7 +4,7 @@ class UIManager:
 
     def __init__(self, game):
         self.buttons = []
-        self.add_button((0, 0), (100, 80), "Hello")
+        #self.add_button((0, 0), (100, 80), "Hello")
 
     def add_button(self, *args, **kwargs):
         self.buttons.append(Button(*args, **kwargs))
