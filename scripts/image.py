@@ -58,7 +58,7 @@ class Assets:
 
     def load_sprites(self):
         sprites = {}
-        path = "assets/images/"
+        path = os.path.join(PATH, "assets/images/")
         self.custom_load_sprites(path, sprites)
         return sprites
 
@@ -74,7 +74,7 @@ class Assets:
 
     def load_tiles(self):
         tiles = {}
-        path = "assets/tiles"
+        path = os.path.join(PATH, "assets/tiles/")
         for (root, dirs, files) in os.walk(path, topdown=True):
             for file_ in files:
                 filename = file_[:-4]
@@ -83,8 +83,8 @@ class Assets:
 
     def load_ui(self):
         ui = {}
-        path = "assets/ui"
+        path = os.path.join(PATH, "assets/ui/")
         for (root, dirs, files) in os.walk(path, topdown=True):
             for file_ in files:
-                ui[file_[:-4]] = self.load_image(root + '/' + file_)
+                ui[file_[:-4]] = self.load_image(root + '/' + file_, size=1)
         return ui

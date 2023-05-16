@@ -35,7 +35,7 @@ class Bullet(StaticEntity):
                 self.rect.right = tile.left
                 self.position.x = self.rect.centerx
                 self.bounce_off(-1)
-            if self.velocity.x < 0 and self.rect.right > tile.right:
+            elif self.velocity.x < 0 and self.rect.right > tile.right:
                 self.rect.left = tile.right + 1
                 self.position.x = self.rect.centerx
                 self.bounce_off(-1)
@@ -57,7 +57,7 @@ class Bullet(StaticEntity):
                 self.position.y = self.rect.centery
                 self.bounce_off(1)
 
-            if self.velocity.y < 0 and self.rect.bottom > tile.bottom:
+            elif self.velocity.y < 0 and self.rect.bottom > tile.bottom:
                 self.rect.top = tile.bottom
                 self.position.y = self.rect.centery
                 self.bounce_off(1)

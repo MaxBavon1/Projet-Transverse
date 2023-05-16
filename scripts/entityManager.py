@@ -36,12 +36,12 @@ class EntityManager:
         self.player = Player(None, self.assets["player_anim"], (750, 400), 0, tag="player")
         self.ennemies = EntityGroup(self, "bat_anim")
         self.bullets = EntityGroup(self, "bullet")
-        # self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
-        # self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
-        # self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
-        # self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
-        # self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
-        # self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
+        self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
+        self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
+        self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
+        self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
+        self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
+        self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
 
     @property
     def size(self):
