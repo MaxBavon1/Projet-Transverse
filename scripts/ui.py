@@ -30,6 +30,52 @@ class UIManager:
 
 class Button:
 
+    __slots__ = ["font", "text", "rect", "background", "hover_color", "text_color", "hover_scale", "hover", "command"]
+
+    def __init__(self, pos, size, font, txt="", bg=(0,0,0,180), txt_color=(255,255,220), hover_col=(0, 0, 0, 255), hover_scale=1.1, command=lambda:0):
+        self.font = font
+        self.text = txt
+        self.rect = pygame.Rect((0, 0), size)
+        self.rect.center = pos
+        self.background = bg
+        self.text_color = txt_color
+        self.hover_color = hover_col
+        self.hover_scale = hover_scale
+        self.hover = False
+        self.command = command
+    
+    def collide(self, mousePos):
+        return self.rect.collidepoint(mousePos.x, mousePos.y)
+
+    def update(self, mousePos):
+        self.hover = self.collide(mousePos)
+        
+        if (self.hover and pygame.mouse.get_pressed()[0]):
+            self.command()
+
+    def render(self, surface):
+        if self.hover:
+            surf = pygame.Surface(self.rect.size)
+            surf.fill(self.hover_color)
+            width, height = self.font.size(self.text)
+            txt_surf = self.font.render(self.text, 1, self.text_color)
+            surf.blit(txt_surf, (surf.get_width() / 2 - width / 2, surf.get_height() / 2 - height / 2))
+            surf.set_alpha(self.hover_color[3])
+
+            surface.blit(surf, self.rect.topleft)
+        else:
+            surf = pygame.Surface(self.rect.size)
+            surf.fill(self.background)
+            width, height = self.font.size(self.text)
+            txt_surf = self.font.render(self.text, 1, self.text_color)
+            surf.blit(txt_surf, (surf.get_width() / 2 - width / 2, surf.get_height() / 2 - height / 2))
+            surf.set_alpha(self.background[3])
+
+            surface.blit(surf, self.rect.topleft)
+
+
+class ButtonImg:
+
     __slots__ = ["image", "rect", "hover_color", "hover_scale", "hover", "command"]
 
     def __init__(self, pos, img, hover_col=(200, 200, 200), hover_scale=1.1, command=lambda:0):
@@ -62,9 +108,10 @@ class Button:
             surface.blit(self.image, self.rect.topleft)
 
 
+
 class Label:
     
-    __slots__ = ["text", "font", "rect", "txt_color", "hover_color", "hover_scale", "hover", "command"]
+    __slots__ = ["text", "font", "rect", "text_color", "hover_color", "hover_scale", "hover", "command"]
 
     def __init__(self, pos, font, txt="", txt_color=(255,255,255), hover_color=(0,0,0), command=lambda:0):
         self.text = txt
@@ -72,7 +119,7 @@ class Label:
         self.rect = pygame.Rect((0, 0, 0, 0))
         self.rect.size = self.font.size(txt)[0], self.font.size(txt)[1]
         self.rect.center = pos
-        self.txt_color = txt_color
+        self.text_color = txt_color
         self.hover_color = hover_color
         self.hover = False
         self.command = command
@@ -90,6 +137,6 @@ class Label:
         if self.hover:
             surf = self.font.render(self.text, 1, self.hover_color)
         else:
-            surf = self.font.render(self.text, 1, self.txt_color)
+            surf = self.font.render(self.text, 1, self.text_color)
         
         surface.blit(surf, self.rect.topleft)

@@ -162,6 +162,7 @@ class MainMenu(Menu):
         settings_but = Label((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik60"], "Settings", COLORS["cyan"], COLORS["purple"])
         credits_but = Label((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik60"], "Credits", COLORS["cyan"], COLORS["purple"])
         quit_but = Label((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik60"], "Quit", COLORS["cyan"], COLORS["purple"], command=Quit)
+
         self.UIManager.adds(play_but, rules_but, settings_but, credits_but, quit_but)
 
 

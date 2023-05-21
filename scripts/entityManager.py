@@ -37,7 +37,6 @@ class EntityManager:
         self.ennemies = EntityGroup(self, "bat_anim")
         self.bullets = EntityGroup(self, "bullet")
 
-        # self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
         # self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
         # self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
         # self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
@@ -47,8 +46,8 @@ class EntityManager:
     @property
     def size(self):
         return 1 + len(self.ennemies) + len(self.bullets)
-
-    def load_level(self, entity_tilemap):
+    
+    def load_entities(self, entity_tilemap):
         player_spawn = 0
         player_end = 0
 
@@ -61,6 +60,10 @@ class EntityManager:
                         if not player_spawn: player_spawn = tile_pos
                         self.player = Player(None, self.assets["player_anim"], player_spawn, 0, tag="player")
                         return
+
+    def load_level(self, entity_tilemap):
+        self.load_entities(entity_tilemap)
+        self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
 
     def update(self, deltaTime, gravityScale):
         self.bullets.update(deltaTime, gravityScale)

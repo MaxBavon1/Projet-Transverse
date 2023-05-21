@@ -14,6 +14,7 @@ class Level:
         self.layers = {}
         self.tilesets = {}
 
+        self.level = 0
         self.name = ""
         self.width = 0
         self.height = 0
@@ -36,6 +37,7 @@ class Level:
             self.tilesets[name] = self.tiles[name]
 
     def load_level(self, lvl):
+        self.level = lvl
         self.name = self.levels[lvl]
         self.load_tilemaps(lvl)
         self.load_tilesets()

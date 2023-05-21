@@ -141,7 +141,6 @@ class StaticEntity(pygame.sprite.Sprite):
         movement = self.velocity * 0.2
         pygame.draw.aaline(surface, (0,0,255), self.position - offset, self.position + movement - offset, 2)
 
-    
     def destroy(self):
         self.kill()
         self.on_death()

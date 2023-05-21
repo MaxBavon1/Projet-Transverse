@@ -30,7 +30,20 @@ class GameManager(Menu):
         self.level = Level(self)
         self.entityManager = EntityManager(self)
         self.camera = Camera(self)
-    
+        
+        # ---- UI ----
+        self.paused = False
+        self.UIManager = UIManager()    
+        resume_but = Button((self.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Resume", command=self.unpause)
+        quit_but = Button((self.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=lambda:self.quit(True))
+        self.UIManager.adds(resume_but, quit_but)
+
+        self.deathMenu = Death(self)
+
+    def unpause(self):
+        self.paused = not self.paused
+        pygame.mouse.set_visible(self.paused)
+
     def load_level(self, lvl):
         """ Game Loading Datas, Entities, Levels """
         self.lastFrame = time.time()
@@ -40,53 +53,62 @@ class GameManager(Menu):
         self.level.load_level(lvl)
         self.entityManager.load_level(self.level.layers["entities"])
         self.camera.follow(self.entityManager.player)
-        # self.UIManager = UIManager()
 
     def events(self, event):
         if event.type == KEYDOWN:
-            if event.key == K_F3:
-                self.debugMode = not self.debugMode
-            if event.key == K_F5:
-                self.fixedUpdate = not self.fixedUpdate
-            if event.key == K_SPACE or event.key == K_UP:
-                if self.entityManager.player.grounded:	
-                    self.entityManager.player.jump()
-        if event.type == MOUSEBUTTONDOWN:
+            if event.key == K_ESCAPE:
+                self.unpause()
+            if not self.paused:
+                if event.key == K_F3:
+                    self.debugMode = not self.debugMode
+                if event.key == K_F5:
+                    self.fixedUpdate = not self.fixedUpdate
+                if event.key == K_SPACE or event.key == K_UP:
+                    if self.entityManager.player.grounded:	
+                        self.entityManager.player.jump()
+        if event.type == MOUSEBUTTONDOWN and not self.paused:
             if event.button == 1:	
                 self.entityManager.player.shoot()
                 # self.UIManager.clicked()
 
     def update(self):
-        keyboard = pygame.key.get_pressed()
-        if keyboard[K_F6]:
-            self.FPS -= 1
-        if keyboard[K_F7]:
-            self.FPS += 1
-
         self.deltaTime =  time.time() - self.lastFrame
         if self.fixedUpdate: self.deltaTime = 1 / 144
         self.lastFrame = time.time()
         self.ticks = pygame.time.get_ticks() * 0.001
         self.currentFps = round(self.clock.get_fps())
         self.mousePos = pygame.Vector2(pygame.mouse.get_pos())
-        
-        self.entityManager.update(self.deltaTime, self.gravityScale)
-        self.camera.update(self.deltaTime)
-        # self.UIManager.update()
+
+        if not self.paused:
+            keyboard = pygame.key.get_pressed()
+            if keyboard[K_F6]:
+                self.FPS -= 1
+            if keyboard[K_F7]:
+                self.FPS += 1
+
+            self.entityManager.update(self.deltaTime, self.gravityScale)
+            self.camera.update(self.deltaTime)
+        else:
+            self.UIManager.update(self.mousePos)
 
     def render(self):
         self.level.render(self.window, self.camera)
 
         self.entityManager.render(self.window, self.camera)
 
-        if self.debugMode:
-            self.render_debug()
-        if self.fixedUpdate:
-            self.render_update_mode()
-           
-        # self.UIManager.render(self.window)
-
-        self.window.blit(self.assets.ui["cursor"], self.mousePos - (pygame.Vector2(self.assets.ui["cursor"].get_size()) / 2))
+        if self.paused:
+            pause_bg = pygame.Surface((self.WIDTH, self.HEIGHT))
+            pause_bg.fill((0, 0, 0))
+            pause_bg.set_alpha(80)
+            self.window.blit(pause_bg, (0, 0))
+            self.UIManager.render(self.window)
+        else:
+            if self.debugMode:
+                self.render_debug()
+            if self.fixedUpdate:
+                self.render_update_mode()
+            # Cursor
+            self.window.blit(self.assets.ui["cursor"], self.mousePos - (pygame.Vector2(self.assets.ui["cursor"].get_size()) / 2))
 
     def render_text(self, text, pos, font="rubik20"):
         current_font = self.assets.fonts[font]
@@ -123,11 +145,42 @@ class GameManager(Menu):
         self.load_level(lvl)
         super().run()
 
+    def quit(self, pause=False):
+        if pause:
+            pygame.mouse.set_visible(True)
+            self.running = False
+
+
+class Death(Menu):
+
+    def __init__(self, game, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.game = game
+        self.UIManager = UIManager()
+        retry_but = Button((self.game.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Retry", command=self.close)
+        quit_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=self.quit)
+        self.UIManager.adds(retry_but, quit_but)
+
+    def events(self, event):
+        pass
+
+    def update(self):
+        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
+
+    def render(self):
+        self.window.fill((255, 0, 0))
+
+        self.UIManager.render(self.window)
+
     def quit(self):
-        print("[QUITING GAME...]")
+        super().quit()
+        self.game.quit(True)
+    
+    def close(self):
+        print("Closing")
+        super().quit()
+        self.game.load_level(self.game.level.level)
+    
+    def run(self):
         pygame.mouse.set_visible(True)
-        self.running = False
-
-
-# if __name__ == "__main__":
-# 	GameManager().run()
+        super().run()

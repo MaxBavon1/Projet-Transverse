@@ -40,9 +40,6 @@ class Player(Entity):
         else: self.set_bottom(bottom)
 
     def update(self, *args):
-        if self.health <= 0:
-            self.entityManager.game.quit()
-
         keyboard = pygame.key.get_pressed()
         self.velocity.x = 0
         if keyboard[pygame.K_d] or keyboard[pygame.K_RIGHT]:
@@ -72,3 +69,6 @@ class Player(Entity):
 
         health_txt = f"HP : {self.health}"
         self.entityManager.game.render_text(health_txt, (0, 0))
+    
+    def on_death(self):
+        self.entityManager.game.deathMenu.run()
