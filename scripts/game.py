@@ -39,6 +39,7 @@ class GameManager(Menu):
         self.UIManager.adds(resume_but, quit_but)
 
         self.deathMenu = Death(self)
+        self.winMenu = Win(self)
 
     def unpause(self):
         self.paused = not self.paused
@@ -99,7 +100,7 @@ class GameManager(Menu):
         if self.paused:
             pause_bg = pygame.Surface((self.WIDTH, self.HEIGHT))
             pause_bg.fill((0, 0, 0))
-            pause_bg.set_alpha(80)
+            pause_bg.set_alpha(100)
             self.window.blit(pause_bg, (0, 0))
             self.UIManager.render(self.window)
         else:
@@ -177,7 +178,42 @@ class Death(Menu):
         self.game.quit(True)
     
     def close(self):
-        print("Closing")
+        super().quit()
+        self.game.load_level(self.game.level.level)
+    
+    def run(self):
+        pygame.mouse.set_visible(True)
+        super().run()
+
+
+class Win(Menu):
+
+    def __init__(self, game, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.game = game
+        self.UIManager = UIManager()
+        self.background = (40, 91, 133)
+        win_label = Label((self.game.WIDTH / 2, 200), self.assets.fonts["rubik80"], "Victory !", (250, 241, 72))
+        retry_but = Button((self.game.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Retry", command=self.close)
+        quit_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=self.quit)
+        self.UIManager.adds(win_label, retry_but, quit_but)
+
+    def events(self, event):
+        pass
+
+    def update(self):
+        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
+
+    def render(self):
+        self.window.fill(self.background)
+
+        self.UIManager.render(self.window)
+
+    def quit(self):
+        super().quit()
+        self.game.quit(True)
+    
+    def close(self):
         super().quit()
         self.game.load_level(self.game.level.level)
     

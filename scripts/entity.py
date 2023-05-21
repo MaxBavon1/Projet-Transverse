@@ -107,6 +107,7 @@ class StaticEntity(pygame.sprite.Sprite):
 
     def update(self, deltaTime, gravityScale):
         self.health_update()
+        # ---- Map Collisions
         # X Axis
         level = self.entityManager.game.level
         self.position.x += self.velocity.x * deltaTime

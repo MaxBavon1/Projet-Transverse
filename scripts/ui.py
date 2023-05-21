@@ -2,30 +2,67 @@ from pygame.locals import *
 import pygame
 
 
-__all__ = ["UIManager", "Button", "Label"]
+__all__ = ["UIManager", "Image", "Label", "Button", "ButtonImg", "ButtonLabel"]
 
 
 class UIManager:
 
-    __slots__ = ["objects"]
+    __slots__ = ["buttons", "objects"]
 
     def __init__(self):
+        self.buttons = []
         self.objects = []
 
     def add(self, obj):
-        self.objects.append(obj)
+        if (isinstance(obj, Image) or isinstance(obj, Label)):
+            self.objects.append(obj)
+        else:
+            self.buttons.append(obj)
 
     def adds(self, *objs):
         for obj in objs:
-            self.objects.append(obj)
+            if (isinstance(obj, Image) or isinstance(obj, Label)):
+                self.objects.append(obj)
+            else:
+                self.buttons.append(obj)
 
     def update(self, mousePos):
-        for obj in self.objects:
+        for obj in self.buttons:
             obj.update(mousePos)
     
     def render(self, surface):
+        for obj in self.buttons:
+            obj.render(surface)
         for obj in self.objects:
             obj.render(surface)
+
+
+class Image:
+
+    __slots__ = ["position", "image"]
+
+    def __init__(self, pos, img) -> None:
+        self.position = pos
+        self.image = img
+
+    def render(self, surface):
+        surface.blit(self.image, (self.position[0] - self.image.get_width() / 2, self.position[1] - self.image.get_height() / 2))
+
+
+class Label:
+
+    __slots__ = ["position", "font", "text", "text_color"]
+
+    def __init__(self, pos, font, txt="", txt_color=(255,255,220)) -> None:
+        self.position = pos
+        self.font = font
+        self.text = txt
+        self.text_color = txt_color
+
+    def render(self, surface):
+        surf = self.font.render(self.text, 1, self. text_color)
+        width, height = self.font.size(self.text)
+        surface.blit(surf, (self.position[0] - (width / 2), self.position[1] - (height / 2)))
 
 
 class Button:
@@ -109,7 +146,7 @@ class ButtonImg:
 
 
 
-class Label:
+class ButtonLabel:
     
     __slots__ = ["text", "font", "rect", "text_color", "hover_color", "hover_scale", "hover", "command"]
 

@@ -2,7 +2,9 @@
 from pygame.locals import *
 import pygame
 import time
+import json
 
+from .data import *
 from .assets import *
 from .ui import *
 from .menus import *
@@ -33,7 +35,9 @@ pygame.display.update()
 time.sleep(0) # Prentending loading the game assets takes time...
 assets = Assets()
 assets.ui["backgroundfinal2"] = pygame.transform.scale(assets.ui["backgroundfinal2"], MONITO_SIZE)
-Menu.init(window, clock, assets)
+data = Data()
+data.load_progress()
+Menu.init(window, clock, data, assets)
 
 def Launch():
     MainMenu().run()
@@ -134,11 +138,15 @@ class Levels(Menu):
         self.main = main
         self.UIManager = UIManager()
         
-        levels_label = Label((MONITO_SIZE[0] / 2, 250 * RESIZING[1]), assets.fonts["rubik80"], "Levels", COLORS["blue"], COLORS["blue"])
-        level1_label = Label((MONITO_SIZE[0] / 2, 450 * RESIZING[1]), assets.fonts["rubik40"], "Level 1", COLORS["blue"], COLORS["black"], command=lambda:self.main.load_menu("game", 1))
-        level2_label = Label((MONITO_SIZE[0] / 2, 550 * RESIZING[1]), assets.fonts["rubik40"], "Level 2", COLORS["blue"], COLORS["black"], command=lambda:self.main.load_menu("game", 2))
-        level3_label = Label((MONITO_SIZE[0] / 2, 650 * RESIZING[1]), assets.fonts["rubik40"], "Level 3", COLORS["blue"], COLORS["black"], command=lambda:self.main.load_menu("game", 3))
+        levels_label = ButtonLabel((MONITO_SIZE[0] / 2, 250 * RESIZING[1]), assets.fonts["rubik80"], "Levels", COLORS["blue"], COLORS["blue"])
+        level1_label = ButtonLabel((MONITO_SIZE[0] / 2, 450 * RESIZING[1]), assets.fonts["rubik40"], "Level 1", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(1))
+        level2_label = ButtonLabel((MONITO_SIZE[0] / 2, 550 * RESIZING[1]), assets.fonts["rubik40"], "Level 2", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(2))
+        level3_label = ButtonLabel((MONITO_SIZE[0] / 2, 650 * RESIZING[1]), assets.fonts["rubik40"], "Level 3", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(3))
         self.UIManager.adds(levels_label, level1_label, level2_label, level3_label)
+
+    def load_level(self, lvl):
+        if lvl == 1 or data.progress[f"level {lvl - 1}"]:
+            self.main.load_menu("game", lvl)
 
     def events(self, event):
         pass
@@ -148,6 +156,16 @@ class Levels(Menu):
 
     def render(self):
         self.UIManager.render(self.window)
+    
+    def run(self):
+        self.UIManager.objects = []
+        for i in range(1, data.progress["nb_levels"]):
+            if (not data.progress[f"level {i}"]):
+                button = self.UIManager.buttons[i + 1]
+                self.UIManager.add(Image((button.rect.x - 25, button.rect.centery), assets.ui["lock"]))
+                button.hover_color = (255, 0, 0)
+
+        super().run()
 
 
 class MainMenu(Menu):
@@ -157,11 +175,11 @@ class MainMenu(Menu):
 
         self.UIManager = UIManager()
 
-        play_but = Label((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Play", COLORS["cyan"], COLORS["purple"], command=lambda:self.load_menu("levels", 1))
-        rules_but = Label((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.fonts["rubik60"], "Rules", COLORS["cyan"], COLORS["purple"])
-        settings_but = Label((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik60"], "Settings", COLORS["cyan"], COLORS["purple"])
-        credits_but = Label((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik60"], "Credits", COLORS["cyan"], COLORS["purple"])
-        quit_but = Label((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik60"], "Quit", COLORS["cyan"], COLORS["purple"], command=Quit)
+        play_but = ButtonLabel((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Play", COLORS["cyan"], COLORS["purple"], command=lambda:self.load_menu("levels", 1))
+        rules_but = ButtonLabel((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.fonts["rubik60"], "Rules", COLORS["cyan"], COLORS["purple"])
+        settings_but = ButtonLabel((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik60"], "Settings", COLORS["cyan"], COLORS["purple"])
+        credits_but = ButtonLabel((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik60"], "Credits", COLORS["cyan"], COLORS["purple"])
+        quit_but = ButtonLabel((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik60"], "Quit", COLORS["cyan"], COLORS["purple"], command=Quit)
 
         self.UIManager.adds(play_but, rules_but, settings_but, credits_but, quit_but)
 

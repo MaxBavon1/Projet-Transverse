@@ -46,19 +46,15 @@ class EntityManager:
     @property
     def size(self):
         return 1 + len(self.ennemies) + len(self.bullets)
-    
-    def load_entities(self, entity_tilemap):
-        player_spawn = 0
-        player_end = 0
 
+    def load_entities(self, entity_tilemap):
         for y in range(len(entity_tilemap)):
             for x in range(len(entity_tilemap[0])):
                 ID = int(entity_tilemap[y][x])
                 if ID != -1:
                     tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
                     if ID == 16: # Player
-                        if not player_spawn: player_spawn = tile_pos
-                        self.player = Player(None, self.assets["player_anim"], player_spawn, 0, tag="player")
+                        self.player = Player(None, self.assets["player_anim"], tile_pos, 0, tag="player")
                         return
 
     def load_level(self, entity_tilemap):

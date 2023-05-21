@@ -10,6 +10,7 @@ class Menu(ABC):
 
     window = None
     clock = None
+    data = None
     assets = None
 
     def __init__(self, bg=(135, 135, 135), FPS=90):
@@ -18,9 +19,10 @@ class Menu(ABC):
         self.running = True
 
     @classmethod
-    def init(cls, window, clock, assets):
+    def init(cls, window, clock, data, assets):
         cls.window = window
         cls.clock = clock
+        cls.data = data
         cls.assets = assets
 
     def _events(self):
