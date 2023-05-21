@@ -33,9 +33,10 @@ class EntityManager:
             "bullet": Bullet,
             "bat_anim" : Slime}
         StaticEntity.init(self)
-        self.player = Player(None, self.assets["player_anim"], (750, 400), 0, tag="player")
+        self.player = None
         self.ennemies = EntityGroup(self, "bat_anim")
         self.bullets = EntityGroup(self, "bullet")
+
         # self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
         # self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
         # self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
@@ -46,6 +47,20 @@ class EntityManager:
     @property
     def size(self):
         return 1 + len(self.ennemies) + len(self.bullets)
+
+    def load_level(self, entity_tilemap):
+        player_spawn = 0
+        player_end = 0
+
+        for y in range(len(entity_tilemap)):
+            for x in range(len(entity_tilemap[0])):
+                ID = int(entity_tilemap[y][x])
+                if ID != -1:
+                    tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
+                    if ID == 16: # Player
+                        if not player_spawn: player_spawn = tile_pos
+                        self.player = Player(None, self.assets["player_anim"], player_spawn, 0, tag="player")
+                        return
 
     def update(self, deltaTime, gravityScale):
         self.bullets.update(deltaTime, gravityScale)

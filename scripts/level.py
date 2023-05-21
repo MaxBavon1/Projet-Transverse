@@ -7,24 +7,24 @@ class Level:
 
     levels = {1 : "forest", 2 : "snow", 3 : "lava"}
 
-    def __init__(self, game, lvl):
+    def __init__(self, game):
         self.game = game
         self.tiles = game.assets.tiles
         self.tilemap = []
         self.layers = {}
         self.tilesets = {}
 
-        self.name = self.levels[lvl]
+        self.name = ""
         self.width = 0
         self.height = 0
-        self.load_level(lvl)
-
         self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
 
     def load_tilemaps(self, lvl):
         path = f"data/level{lvl}/"
         for tilemap in os.listdir(path):
             name = tilemap.replace(".csv", "")
+            name = name[7:] # Remove the "leveln_"
+            name = name.lower()
             if name == "collisions":
                 self.tilemap = list(csv.reader(open(path + tilemap)))
             else:
@@ -36,6 +36,7 @@ class Level:
             self.tilesets[name] = self.tiles[name]
 
     def load_level(self, lvl):
+        self.name = self.levels[lvl]
         self.load_tilemaps(lvl)
         self.load_tilesets()
 

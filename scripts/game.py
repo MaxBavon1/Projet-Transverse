@@ -26,13 +26,20 @@ class GameManager(Menu):
         self.fixedUpdate = False
         self.mousePos = pygame.Vector2(pygame.mouse.get_pos())
         self.ticks = 0
-    
-    def init(self):
-        """ Game Loading Datas, Entities, Levels """
-        self.gravityScale = 1700
-        self.level = None
+
+        self.level = Level(self)
         self.entityManager = EntityManager(self)
-        self.camera = Camera(self, self.entityManager.player)
+        self.camera = Camera(self)
+    
+    def load_level(self, lvl):
+        """ Game Loading Datas, Entities, Levels """
+        self.lastFrame = time.time()
+        pygame.mouse.set_visible(False)
+        self.gravityScale = 1700
+
+        self.level.load_level(lvl)
+        self.entityManager.load_level(self.level.layers["entities"])
+        self.camera.follow(self.entityManager.player)
         # self.UIManager = UIManager()
 
     def events(self, event):
@@ -110,20 +117,10 @@ class GameManager(Menu):
         surface.fill((255, 0, 0))
         self.window.blit(surface, (0, 0))
 
-    def load_level(self, lvl):
-        self.lastFrame = time.time()
-        self.entityManager = EntityManager(self)
-        self.camera = Camera(self, self.entityManager.player)
-        self.level = Level(self, lvl)
-
-
     def run(self, lvl):
         print("[LAUNCHING GAME...]")
 
-        self.init()
         self.load_level(lvl)
-        pygame.mouse.set_visible(False)
-
         super().run()
 
     def quit(self):
