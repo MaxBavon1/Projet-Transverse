@@ -29,6 +29,21 @@ class Player(Entity):
 
         super().animate()
 
+    def set_animation_rect_(self, animation, sprite):
+        if animation == "walk_right":
+            left = self.hitbox.left
+            self.set_size(sprite.get_size())
+            self.set_left(left)
+        elif animation == "walk_left":
+            right = self.hitbox.right
+            self.set_size(sprite.get_size())
+            self.set_right(right)
+        else:
+            middle, bottom = self.hitbox.centerx, self.hitbox.bottom
+            self.set_size(sprite.get_size())
+            self.set_bottom(bottom)
+            self.set_pos((middle, self.position.y))
+
     def update(self, *args):
         if self.health <= 0:
             self.entityManager.game.quit()

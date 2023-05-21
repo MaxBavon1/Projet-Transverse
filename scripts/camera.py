@@ -20,4 +20,4 @@ class Camera:
         self.offset = self.position - self.center
     
     def render_debug(self, surface):
-        pygame.draw.circle(surface, (255, 255, 255), self.center, 4)
+        pygame.draw.circle(surface, (255, 255, 255), self.center, 0)

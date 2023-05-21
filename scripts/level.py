@@ -43,8 +43,8 @@ class Level:
         self.height = len(self.tilemap)
 
     def collide(self, entity, range_=2):
-        tileX = int(entity.rect.x // TILE_SIZE)
-        tileY = int(entity.rect.y // TILE_SIZE)
+        tileX = int(entity.hitbox.x // TILE_SIZE)
+        tileY = int(entity.hitbox.y // TILE_SIZE)
         tiles = []
         detection_range = range_
         for y in range(tileY - detection_range, tileY + detection_range + 1):
@@ -52,7 +52,7 @@ class Level:
                 if (x >= 0 and x < self.width) and (y >= 0 and y < self.height):
                     if int(self.tilemap[y][x]) > 10:
                         tile = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                        if entity.rect.colliderect(tile):
+                        if entity.hitbox.colliderect(tile):
                             tiles.append(tile)
         return tiles
 

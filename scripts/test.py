@@ -1,3 +1,5 @@
-import os
+import pygame
 
-print(os.listdir("data/level_test"))
+vec = pygame.Vector2(82, 2)
+
+print(vec[0])

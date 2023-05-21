@@ -13,6 +13,9 @@ class StaticEntity(pygame.sprite.Sprite):
         self.position = pygame.Vector2(pos)
         self.velocity = pygame.Vector2(vel)
         self.rect = sprite.get_rect(center=self.position)
+        self.hitbox = sprite.get_rect(center=self.position)
+        self.hitsize = pygame.Vector2(10, 5)
+        self.set_size(self.rect.size)
         self.sprite = sprite
         self.speed = speed
         self.grounded = False
@@ -25,64 +28,129 @@ class StaticEntity(pygame.sprite.Sprite):
     @classmethod
     def init(cls, manager):
         cls.entityManager = manager
+    
+    def set_left(self, x):
+        self.hitbox.left = x
+        self.position.x = self.hitbox.centerx
+        self.rect.centerx = self.hitbox.centerx
 
-    def horizontal_collision(self, level):
-        # ---- Horizontal Collisions ----
-        if self.rect.left < level.border.left: # Border Left
-                self.rect.left = level.border.left
-                self.position.x = self.rect.centerx
-        if self.rect.right > level.border.right: # Border Right
-                self.rect.right = level.border.right
-                self.position.x = self.rect.centerx
+    def set_right(self, x):
+        self.hitbox.right = x
+        self.position.x = self.hitbox.centerx
+        self.rect.centerx = self.hitbox.centerx
 
-        for tile in level.collide(self): # TileMap
-            if self.velocity.x > 0 and self.rect.left > tile.left:
-                self.rect.right = tile.left
-                self.position.x = self.rect.centerx
-            elif self.velocity.x < 0 and self.rect.right < tile.right:
-                self.rect.left = tile.right
-                self.position.x = self.rect.centerx
+    def set_top(self, y):
+        self.hitbox.top = y
+        self.position.y = self.hitbox.centery
+        self.rect.centery = self.hitbox.centery
 
-    def vertical_collision(self, level):
-        # ---- Vertical Collisions ----
-        if self.rect.top < level.border.top: # Border Top
-                self.rect.top = level.border.top
-                self.position.y = self.rect.centery
-                self.velocity.y = 0
-        if self.rect.bottom > level.border.bottom: # Border Bottom
-                self.rect.bottom = level.border.bottom
-                self.position.y = self.rect.centery
-                self.velocity.y = 0
-                self.grounded = True
+    def set_bottom(self, y):
+        self.hitbox.bottom = y
+        self.position.y = self.hitbox.centery
+        self.rect.centery = self.hitbox.centery
+    
+    def set_pos(self, pos):
+        self.position.x, self.position.y = pos[0], pos[1]
+        self.hitbox.center = pos
+        self.rect.center = pos
+    
+    def set_size(self, size):
+        self.hitbox.size = size[0] - self.hitsize.x, size[1] - self.hitsize[1]
+        self.rect.size = size
+        self.hitbox.center = self.position
+        self.rect.center = self.position
 
-        for tile in level.collide(self): # TileMap
-            if self.velocity.y > 0 and self.rect.top < tile.top:
-                self.rect.bottom = tile.top
-                self.position.y = self.rect.centery
-                self.velocity.y = 0
-                self.grounded = True
-            elif self.velocity.y < 0 and self.rect.bottom > tile.bottom:
-                self.rect.top = tile.bottom
-                self.position.y = self.rect.centery
-                self.velocity.y = 0
     
     def health_update(self):
         if self.health <= 0:
             self.destroy()
 
+    # def horizontal_collision(self, level):
+    #     # ---- Horizontal Collisions ----
+    #     if self.hitbox.left < level.border.left: # Border Left
+    #             self.set_left(level.border.left)
+    #     if self.hitbox.right > level.border.right: # Border Right
+    #         self.set_right(level.border.right)
+
+    #     for tile in level.collide(self): # TileMap
+    #         if self.velocity.x > 0:
+    #             self.set_right(tile.left)
+    #         elif self.velocity.x < 0:
+    #             self.set_left(tile.right)
+
+    # def vertical_collision(self, level):
+    #     # ---- Vertical Collisions ----
+    #     if self.hitbox.top < level.border.top: # Border Top
+    #             self.set_top(level.border.top)
+    #             self.velocity.y = 0
+    #     if self.hitbox.bottom > level.border.bottom: # Border Bottom
+    #             self.set_bottom(level.border.bottom)
+    #             self.velocity.y = 0
+    #             self.grounded = True
+
+    #     for tile in level.collide(self): # TileMap
+    #         if self.velocity.y > 0:
+    #             self.set_bottom(tile.top)
+    #             self.velocity.y = 0
+    #             self.grounded = True
+    #         elif self.velocity.y < 0:
+    #             self.set_top(tile.bottom)
+    #             self.velocity.y = 0
+
+    def horizontal_collision(self, level):
+        # ---- Horizontal Collisions ----
+        if self.hitbox.left < level.border.left: # Border Left
+            self.hitbox.left = level.border.left
+            self.position.x = self.hitbox.centerx
+        if self.hitbox.right > level.border.right: # Border Right
+            self.hitbox.right = level.border.right
+            self.position.x = self.hitbox.centerx
+
+        for tile in level.collide(self): # TileMap
+            if self.velocity.x > 0:
+                self.hitbox.right = tile.left
+                self.position.x = self.hitbox.centerx
+            elif self.velocity.x < 0:
+                self.hitbox.left = tile.right
+                self.position.x = self.hitbox.centerx
+
+    def vertical_collision(self, level):
+        # ---- Vertical Collisions ----
+        if self.hitbox.top < level.border.top: # Border Top
+            self.hitbox.top = level.border.top
+            self.position.y = self.hitbox.centery
+            self.velocity.y = 0
+        if self.hitbox.bottom > level.border.bottom: # Border Bottom
+            self.hitbox.bottom = level.border.bottom
+            self.position.y = self.hitbox.centery
+            self.velocity.y = 0
+            self.grounded = True
+
+        for tile in level.collide(self): # TileMap
+            if self.velocity.y > 0:# and self.hitbox.top < tile.top:
+                self.hitbox.bottom = tile.top
+                self.position.y = self.hitbox.centery
+                self.velocity.y = 0
+                self.grounded = True
+            elif self.velocity.y < 0:# and self.hitbox.bottom > tile.bottom:
+                self.hitbox.top = tile.bottom
+                self.position.y = self.hitbox.centery
+                self.velocity.y = 0
+
     def update(self, deltaTime, gravityScale):
         self.health_update()
-
+        # X Axis
         level = self.entityManager.game.level
         self.position.x += self.velocity.x * deltaTime
-        self.rect.centerx = self.position.x
+        self.hitbox.centerx = self.position.x
         self.horizontal_collision(level)
-
+        # Y Axis
         self.velocity.y += gravityScale * deltaTime
         self.position.y += self.velocity.y * deltaTime
-
-        self.rect.centery = math.ceil(self.position.y)
+        self.hitbox.centery = math.ceil(self.position.y)
         self.vertical_collision(level)
+
+        self.rect.center = self.position
 
         if (self.grounded and self.velocity.y != 0):
             self.grounded = False
@@ -93,9 +161,12 @@ class StaticEntity(pygame.sprite.Sprite):
  
     def render_debug(self, surface, offset):
         # HitBox
-        hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
+        #hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
+        hitbox = pygame.Rect(self.hitbox.x - offset.x, self.hitbox.y - offset.y, self.hitbox.w, self.hitbox.h)
         if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 2)
         else: pygame.draw.rect(surface, (255,0,0), hitbox, 2)
+
+        pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h), 2)
         # Position
         pygame.draw.circle(surface, (0, 0, 0), self.position - offset, 2)
         # Velocity
@@ -123,17 +194,15 @@ class Entity(StaticEntity):
         self.anim_speed = anim_speed
         super().__init__(group, animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
 
-    def set_animation_rect(self, sprite):
-        middle, bottom = self.rect.centerx, self.rect.bottom
-        self.rect.size = sprite.get_size()
-        self.rect.centerx, self.rect.bottom = middle, bottom
-        self.position.x, self.position.y = self.rect.center
+    def set_animation_rect(self, animation, sprite):
+        pass
 
     def play(self, animation):
         if self.current_anim != animation:
+            
             self.frame = 0
             self.current_anim = animation
-            self.set_animation_rect(self.animations[self.current_anim][0])
+            self.set_animation_rect(animation, self.animations[self.current_anim][0])
 
     def animate(self):
         self.frame += 1
@@ -141,5 +210,5 @@ class Entity(StaticEntity):
         self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
 
     def update(self, deltaTime, gravityScale):
-        super().update(deltaTime, gravityScale)
         self.animate()
+        super().update(deltaTime, gravityScale)
