@@ -30,7 +30,7 @@ loading_img = pygame.transform.scale(loading_img, MONITO_SIZE)
 window.blit(loading_img, (0, 0))
 pygame.display.update()
 
-time.sleep(1) # Prentending loading the game assets takes time...
+time.sleep(0) # Prentending loading the game assets takes time...
 assets = Assets()
 assets.ui["backgroundfinal2"] = pygame.transform.scale(assets.ui["backgroundfinal2"], MONITO_SIZE)
 Menu.init(window, clock, assets)

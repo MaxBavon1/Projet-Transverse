@@ -14,7 +14,7 @@ class StaticEntity(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(vel)
         self.rect = sprite.get_rect(center=self.position)
         self.hitbox = sprite.get_rect(center=self.position)
-        self.hitsize = pygame.Vector2(10, 5)
+        self.hitsize = pygame.Vector2(20, 0)
         self.set_size(self.rect.size)
         self.sprite = sprite
         self.speed = speed
@@ -64,38 +64,6 @@ class StaticEntity(pygame.sprite.Sprite):
     def health_update(self):
         if self.health <= 0:
             self.destroy()
-
-    # def horizontal_collision(self, level):
-    #     # ---- Horizontal Collisions ----
-    #     if self.hitbox.left < level.border.left: # Border Left
-    #             self.set_left(level.border.left)
-    #     if self.hitbox.right > level.border.right: # Border Right
-    #         self.set_right(level.border.right)
-
-    #     for tile in level.collide(self): # TileMap
-    #         if self.velocity.x > 0:
-    #             self.set_right(tile.left)
-    #         elif self.velocity.x < 0:
-    #             self.set_left(tile.right)
-
-    # def vertical_collision(self, level):
-    #     # ---- Vertical Collisions ----
-    #     if self.hitbox.top < level.border.top: # Border Top
-    #             self.set_top(level.border.top)
-    #             self.velocity.y = 0
-    #     if self.hitbox.bottom > level.border.bottom: # Border Bottom
-    #             self.set_bottom(level.border.bottom)
-    #             self.velocity.y = 0
-    #             self.grounded = True
-
-    #     for tile in level.collide(self): # TileMap
-    #         if self.velocity.y > 0:
-    #             self.set_bottom(tile.top)
-    #             self.velocity.y = 0
-    #             self.grounded = True
-    #         elif self.velocity.y < 0:
-    #             self.set_top(tile.bottom)
-    #             self.velocity.y = 0
 
     def horizontal_collision(self, level):
         # ---- Horizontal Collisions ----
@@ -163,10 +131,10 @@ class StaticEntity(pygame.sprite.Sprite):
         # HitBox
         #hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
         hitbox = pygame.Rect(self.hitbox.x - offset.x, self.hitbox.y - offset.y, self.hitbox.w, self.hitbox.h)
-        if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 2)
-        else: pygame.draw.rect(surface, (255,0,0), hitbox, 2)
+        if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 1)
+        else: pygame.draw.rect(surface, (255,0,0), hitbox, 1)
 
-        pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h), 2)
+        pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h), 1)
         # Position
         pygame.draw.circle(surface, (0, 0, 0), self.position - offset, 2)
         # Velocity
@@ -199,7 +167,6 @@ class Entity(StaticEntity):
 
     def play(self, animation):
         if self.current_anim != animation:
-            
             self.frame = 0
             self.current_anim = animation
             self.set_animation_rect(animation, self.animations[self.current_anim][0])
@@ -210,5 +177,5 @@ class Entity(StaticEntity):
         self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
 
     def update(self, deltaTime, gravityScale):
-        self.animate()
         super().update(deltaTime, gravityScale)
+        self.animate()

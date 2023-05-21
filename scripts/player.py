@@ -29,20 +29,15 @@ class Player(Entity):
 
         super().animate()
 
-    def set_animation_rect_(self, animation, sprite):
-        if animation == "walk_right":
-            left = self.hitbox.left
-            self.set_size(sprite.get_size())
-            self.set_left(left)
-        elif animation == "walk_left":
-            right = self.hitbox.right
-            self.set_size(sprite.get_size())
-            self.set_right(right)
-        else:
-            middle, bottom = self.hitbox.centerx, self.hitbox.bottom
-            self.set_size(sprite.get_size())
-            self.set_bottom(bottom)
-            self.set_pos((middle, self.position.y))
+    def set_animation_rect(self, animation, sprite):
+        left, right, top, bottom = self.hitbox.left, self.hitbox.right, self.hitbox.top, self.hitbox.bottom # Saves old position
+        self.set_size(sprite.get_size()) # Then resize the sprite to fit new animation
+
+        # Finally reset the position before the sprite switch
+        if self.direction == right: self.set_right(right)
+        else: self.set_left(left)
+        if self.velocity.y > 0: self.set_top(top)
+        else: self.set_bottom(bottom)
 
     def update(self, *args):
         if self.health <= 0:
