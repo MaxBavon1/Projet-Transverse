@@ -61,5 +61,4 @@ class Player(Entity):
         super().render(surface, camera.offset, camera.rect)
 
         health_txt = f"HP : {self.health}"
-        health_surf = self.entityManager.game.font.render(health_txt, 1, (255,255,255))
-        surface.blit(health_surf, (0, 0))
+        self.entityManager.game.render_text(health_txt, (0, 0))
