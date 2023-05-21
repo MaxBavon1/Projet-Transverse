@@ -45,12 +45,20 @@ class Level:
 
         self.width = len(self.tilemap[0])
         self.height = len(self.tilemap)
+        self.end = self.find_level_end()
 
     def level_complete(self):
         self.game.data.progress[f"level {self.level}"] = True
         self.game.data.save_progress()
         self.game.winMenu.run()
-
+    
+    def find_level_end(self) -> pygame.Rect:
+        for y in range(self.height):
+            for x in range(self.width):
+                ID = int(self.layers["objects"][y][x])
+                if ID == 6: # End Flag
+                    return pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE * 2, TILE_SIZE * 2)
+    
     def collide(self, entity, range_=2) -> list:
         tileX = int(entity.hitbox.x // TILE_SIZE)
         tileY = int(entity.hitbox.y // TILE_SIZE)
@@ -66,16 +74,8 @@ class Level:
         return tiles
 
     def collide_objects(self, entity, range_=2):
-        tileX = int(entity.hitbox.x // TILE_SIZE)
-        tileY = int(entity.hitbox.y // TILE_SIZE)
-        detection_range = range_
-        for y in range(tileY - detection_range, tileY + detection_range + 1):
-            for x in range(tileX - detection_range, tileX + detection_range + 1):
-                if (x >= 0 and x < self.width) and (y >= 0 and y < self.height):
-                    if int(self.layers["objects"][y][x]) == 6: # End flag
-                        tile = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                        if entity.hitbox.colliderect(tile):
-                            return self.level_complete()  # V I C T O R Y
+        if (entity.hitbox.colliderect(self.end)):
+            self.level_complete() # V I C T O R Y
 
     def render_old(self, surface, camera):
         offset, screen = camera.offset, camera.rect
