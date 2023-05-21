@@ -1,22 +1,36 @@
 import pygame
 import os
 
-__all__ = ["Assets", "TILE_SIZE"]
+__all__ = ["Assets", "TILE_SIZE", "COLORS"]
 
 PATH = os.getcwd()
 PIXEL_RATIO = 3
 PIXEL_UNIT = 16
 TILE_SIZE = PIXEL_RATIO * PIXEL_UNIT
+# Colors
+COLORS = {
+    "white" : (255,255,255),
+    "black" : (0,0,0),
+    "grey" : (135,135,135),
+    "blue" : (57,140,204),
+    "purple" : (171,32,253),
+    "brown" : (118,54,46),
+    "cyan" : (49,175,212),
+    "pink" : (226,40,220)
+}
+
 
 class Assets:
 
-    __slots__ = ["game", "sprites", "tiles", "ui"]
+    __slots__ = ["sprites", "tiles", "ui", "fonts"]
 
-    def __init__(self, game):
-        self.game = game
+    def __init__(self):
+        """ Loads all the assets needed to run the game, including all directories
+        and files using a recursive method """
         self.sprites = self.load_sprites()
         self.tiles = self.load_tiles()
         self.ui = self.load_ui()
+        self.fonts = self.load_fonts()
 
     def load_image(self, path, size=PIXEL_RATIO, alpha=True):
         surf = pygame.image.load(path)
@@ -58,7 +72,7 @@ class Assets:
 
     def load_sprites(self):
         sprites = {}
-        path = "assets/images/"
+        path = os.path.join(PATH, "assets/images/")
         self.custom_load_sprites(path, sprites)
         return sprites
 
@@ -74,7 +88,7 @@ class Assets:
 
     def load_tiles(self):
         tiles = {}
-        path = "assets/tiles"
+        path = os.path.join(PATH, "assets/tiles/")
         for (root, dirs, files) in os.walk(path, topdown=True):
             for file_ in files:
                 filename = file_[:-4]
@@ -83,8 +97,16 @@ class Assets:
 
     def load_ui(self):
         ui = {}
-        path = "assets/ui"
+        path = os.path.join(PATH, "assets/ui/")
         for (root, dirs, files) in os.walk(path, topdown=True):
             for file_ in files:
                 ui[file_[:-4]] = self.load_image(root + '/' + file_)
         return ui
+    
+    def load_fonts(self):
+        fonts = {}
+        path = os.path.join(PATH, "assets/fonts/")
+        for (root, dirs, files) in os.walk(path, topdown=True):
+            for file_ in files:
+                fonts[file_[:-4]] = pygame.font.Font(os.path.join(path, file_), int(file_[-6:-4])) # font_nameXX -> XX Represent the size of the font
+        return fonts

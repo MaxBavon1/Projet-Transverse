@@ -12,8 +12,8 @@ class StaticEntity(pygame.sprite.Sprite):
         # Physics
         self.position = pygame.Vector2(pos)
         self.velocity = pygame.Vector2(vel)
-        self.rect = sprite.get_rect()
-        self.rect.center = self.position
+        self.rect = sprite.get_rect(center=self.position)
+        self.sprite = sprite
         self.speed = speed
         self.grounded = False
         # Attributes
@@ -21,19 +21,10 @@ class StaticEntity(pygame.sprite.Sprite):
         self.health = self.maxHealth
         self.damage = damage
         self.tag = tag
-        self.set_sprite(sprite)
 
     @classmethod
     def init(cls, manager):
         cls.entityManager = manager
-    
-    def set_sprite(self, sprite):
-        self.sprite = sprite
-        middle, bottom = self.rect.centerx, self.rect.bottom
-        self.rect.size = sprite.get_size()
-        self.rect.centerx, self.rect.bottom = middle, bottom
-        self.position.x, self.position.y = self.rect.center
-        self.vertical_collision(self.entityManager.game.level)
 
     def horizontal_collision(self, level):
         # ---- Horizontal Collisions ----
@@ -45,10 +36,10 @@ class StaticEntity(pygame.sprite.Sprite):
                 self.position.x = self.rect.centerx
 
         for tile in level.collide(self): # TileMap
-            if self.velocity.x > 0:
+            if self.velocity.x > 0 and self.rect.left > tile.left:
                 self.rect.right = tile.left
                 self.position.x = self.rect.centerx
-            if self.velocity.x < 0:
+            elif self.velocity.x < 0 and self.rect.right < tile.right:
                 self.rect.left = tile.right
                 self.position.x = self.rect.centerx
 
@@ -65,12 +56,12 @@ class StaticEntity(pygame.sprite.Sprite):
                 self.grounded = True
 
         for tile in level.collide(self): # TileMap
-            if self.velocity.y > 0:
+            if self.velocity.y > 0 and self.rect.top < tile.top:
                 self.rect.bottom = tile.top
                 self.position.y = self.rect.centery
                 self.velocity.y = 0
                 self.grounded = True
-            if self.velocity.y < 0:
+            elif self.velocity.y < 0 and self.rect.bottom > tile.bottom:
                 self.rect.top = tile.bottom
                 self.position.y = self.rect.centery
                 self.velocity.y = 0
@@ -89,6 +80,7 @@ class StaticEntity(pygame.sprite.Sprite):
 
         self.velocity.y += gravityScale * deltaTime
         self.position.y += self.velocity.y * deltaTime
+
         self.rect.centery = math.ceil(self.position.y)
         self.vertical_collision(level)
 
@@ -131,11 +123,17 @@ class Entity(StaticEntity):
         self.anim_speed = anim_speed
         super().__init__(group, animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
 
+    def set_animation_rect(self, sprite):
+        middle, bottom = self.rect.centerx, self.rect.bottom
+        self.rect.size = sprite.get_size()
+        self.rect.centerx, self.rect.bottom = middle, bottom
+        self.position.x, self.position.y = self.rect.center
+
     def play(self, animation):
         if self.current_anim != animation:
             self.frame = 0
             self.current_anim = animation
-            self.set_sprite(self.animations[self.current_anim][0])
+            self.set_animation_rect(self.animations[self.current_anim][0])
 
     def animate(self):
         self.frame += 1
@@ -143,5 +141,5 @@ class Entity(StaticEntity):
         self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
 
     def update(self, deltaTime, gravityScale):
-        self.animate()
         super().update(deltaTime, gravityScale)
+        self.animate()

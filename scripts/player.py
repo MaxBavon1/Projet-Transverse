@@ -12,28 +12,20 @@ class Player(Entity):
         self.speed = 250
         self.health = 300
         self.flyingSpeed = 2500
-        self.recoil = 50
+        self.direction = "right"
         self.play("walk_right")
     
     def animate(self):
-        if self.velocity.y == 0:
-            if self.velocity.x > 0:
-                self.play("walk_right")
-            elif self.velocity.x < 0:
-                self.play("walk_left")
+        if self.direction == "right":
+            if self.velocity.y == 0:
+                self.play("idle_right") if self.velocity.x == 0 else self.play("walk_right")
             else:
-                self.play("idle_right")
+                self.play("fall_right") if self.velocity.y > 0 else self.play("jump_right")
         else:
-            if self.velocity.y > 0:
-                if self.velocity.x >= 0:
-                    self.play("fall_right")
-                else:
-                    self.play("fall_left")
-            elif self.velocity.y < 0:
-                if self.velocity.x >= 0:
-                    self.play("jump_right")
-                else:
-                    self.play("jump_left")
+            if self.velocity.y == 0:
+                self.play("idle_left") if self.velocity.x == 0 else self.play("walk_left")
+            else:
+                self.play("fall_left") if self.velocity.y > 0 else self.play("jump_left")
 
         super().animate()
 
@@ -45,8 +37,10 @@ class Player(Entity):
         self.velocity.x = 0
         if keyboard[pygame.K_d] or keyboard[pygame.K_RIGHT]:
             self.velocity.x = self.speed
+            self.direction = "right"
         if keyboard[pygame.K_q] or keyboard[pygame.K_LEFT]:
             self.velocity.x = -self.speed
+            self.direction = "left"
 
         if keyboard[pygame.K_TAB]:
             self.shoot()
@@ -67,5 +61,4 @@ class Player(Entity):
         super().render(surface, camera.offset, camera.rect)
 
         health_txt = f"HP : {self.health}"
-        health_surf = self.entityManager.game.font.render(health_txt, 1, (255,255,255))
-        surface.blit(health_surf, (0, 0))
+        self.entityManager.game.render_text(health_txt, (0, 0))
