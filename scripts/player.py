@@ -9,7 +9,7 @@ class Player(Entity):
         super().__init__(*args, **kargs)
         self.anim_speed = 8
         self.jumpForce = 600
-        self.speed = 5000#250
+        self.speed = 250
         self.health = 300
         self.flyingSpeed = 2500
         self.direction = "right"

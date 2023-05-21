@@ -15,6 +15,5 @@ class Data:
             self.progress = json.load(progress_file)
 
     def save_progress(self):
-        json_data = json.dumps(self.progress)
         with open(self.path + "progress.json", "w") as progress_file:
-            progress_file.write(json_data)
+            json.dump(self.progress, progress_file, indent=4)
