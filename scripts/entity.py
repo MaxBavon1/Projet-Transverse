@@ -7,14 +7,14 @@ class StaticEntity(pygame.sprite.Sprite):
 
     entityManager = None
 
-    def __init__(self, group, sprite, pos, speed=1, vel=0, health=1, damage=1, tag="Entity"):
-        super().__init__(group) if group else super().__init__()
+    def __init__(self, sprite, pos, hitsize=(0,0), speed=1, vel=0, health=1, damage=1, tag="Entity"):
+        super().__init__()
         # Physics
         self.position = pygame.Vector2(pos)
         self.velocity = pygame.Vector2(vel)
         self.rect = sprite.get_rect(center=self.position)
         self.hitbox = sprite.get_rect(center=self.position)
-        self.hitsize = pygame.Vector2(20, 0)
+        self.hitsize = pygame.Vector2(hitsize)
         self.set_size(self.rect.size)
         self.sprite = sprite
         self.speed = speed
@@ -59,7 +59,6 @@ class StaticEntity(pygame.sprite.Sprite):
         self.rect.size = size
         self.hitbox.center = self.position
         self.rect.center = self.position
-
     
     def health_update(self):
         if self.health <= 0:
@@ -155,12 +154,13 @@ class StaticEntity(pygame.sprite.Sprite):
 
 class Entity(StaticEntity):
      
-    def __init__(self, group, animations, pos, speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="StaticEntity"):
+    def __init__(self, animations, pos, speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="StaticEntity"):
         self.animations = animations
         self.current_anim = list(animations.keys())[0]
         self.frame = 0
         self.anim_speed = anim_speed
-        super().__init__(group, animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
+        self.direction = "right"
+        super().__init__(animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
 
     def set_animation_rect(self, animation, sprite):
         pass

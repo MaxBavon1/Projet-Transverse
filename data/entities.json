@@ -1,0 +1,8 @@
+{
+    "zombie" : {
+        "speed" : 1,
+        "health" : 3,
+        "damage" : 1,
+        "anim_speed" : 16
+    }
+}

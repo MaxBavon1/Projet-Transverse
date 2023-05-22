@@ -1,7 +1,37 @@
-from .assets import *
 import pygame
 import csv
 import os
+
+from .assets import *
+from .collectables import *
+from .traps import *
+
+
+class TrapsGroup(pygame.sprite.Group):
+
+    def __init__(self, level):
+        super().__init__()
+        self.level = level
+
+    def render(self, surface, camera):
+        for entity in self:
+            entity.render(surface, camera.offset, camera.rect)
+            if self.level.game.debugMode:
+                entity.render_debug(surface, camera.offset)
+
+
+class CollectablesGroup(pygame.sprite.Group):
+
+    def __init__(self, level):
+        super().__init__()
+        self.level = level
+
+    def render(self, surface, camera):
+        for entity in self:
+            entity.render(surface, camera.offset, camera.rect)
+            if self.level.game.debugMode:
+                entity.render_debug(surface, camera.offset)
+
 
 class Level:
 
@@ -9,10 +39,13 @@ class Level:
 
     def __init__(self, game):
         self.game = game
+        self.assets = game.assets.sprites
         self.tiles = game.assets.tiles
         self.tilemap = []
         self.layers = {}
         self.tilesets = {}
+        self.traps = TrapsGroup(self)
+        self.collectables = CollectablesGroup(self)
 
         self.level = 0
         self.name = ""
@@ -37,11 +70,42 @@ class Level:
         for name in self.layers:
             self.tilesets[name] = self.tiles[name]
 
+    def load_traps(self):
+        traps_tilemap = self.layers["traps"]
+        for y in range(len(traps_tilemap)):
+            for x in range(len(traps_tilemap[0])):
+                ID = int(traps_tilemap[y][x])
+                if ID != -1:
+                    tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
+                    tile_pos.x += TILE_SIZE // 2
+                    tile_pos.y += TILE_SIZE // 2
+                    if ID == 10: # Spikes
+                        spike = Trap(self.assets["spike_anim"], tile_pos, 15, (5, 5), tag="spike")
+                        self.traps.add(spike)
+
+    def load_objects(self):
+        objects_tilemap = self.layers["objects"]
+        for y in range(len(objects_tilemap)):
+            for x in range(len(objects_tilemap[0])):
+                ID = int(objects_tilemap[y][x])
+                if ID != -1:
+                    tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
+                    tile_pos.x += TILE_SIZE // 2
+                    tile_pos.y += TILE_SIZE // 2
+                    if ID == 0: # Coin
+                        coin = Collectable(self.assets["coin_spin_anim"], tile_pos, 10, (25, 25), tag="coin")
+                        self.collectables.add(coin)
+                    if ID == 1: # Hearth
+                        hearth = Collectable(self.assets["hearth_anim"], tile_pos, 20, (25, 25), tag="hearth")
+                        self.collectables.add(hearth)
+
     def load_level(self, lvl):
         self.level = lvl
         self.name = self.levels[lvl]
         self.load_tilemaps(lvl)
         self.load_tilesets()
+        self.load_traps()
+        self.load_objects()
 
         self.width = len(self.tilemap[0])
         self.height = len(self.tilemap)
@@ -73,24 +137,22 @@ class Level:
                             tiles.append(tile)
         return tiles
 
-    def collide_objects(self, entity, range_=2):
-        if (entity.hitbox.colliderect(self.end)):
+    def handle_collisions(self, player):
+        if (player.hitbox.colliderect(self.end)):
             self.level_complete() # V I C T O R Y
 
-    def render_old(self, surface, camera):
-        offset, screen = camera.offset, camera.rect
-        for y in range(len(self.tilemap)):
-            for x in range(len(self.tilemap[0])):
-                ID = int(self.tilemap[y][x])
-                if ID != -1:
-                    tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
-                    if screen.colliderect(pygame.Rect(tile_pos, (TILE_SIZE, TILE_SIZE))):
-                        tile = self.tileset[ID]
-                        surface.blit(tile, tile_pos - offset)
+        for trap in self.traps:
+            if trap.hitbox.colliderect(player.hitbox):
+                player.take_damage(trap.damage)
 
-        if self.game.debugMode:
-            self.render_debug(surface, offset)
-    
+        for collectable in self.collectables:
+            if collectable.hitbox.colliderect(player.hitbox):
+                if collectable.tag == "coin":
+                    player.coins += 1
+                elif collectable.tag == "hearth":
+                    player.health += 2
+                collectable.on_collision()
+
     def render_tilemap(self, surface, camera, tilemap, tileset):
         offset, screen = camera.offset, camera.rect
         for y in range(self.height):
@@ -114,9 +176,13 @@ class Level:
 
     def render(self, surface, camera):
         """ Render all level layers and main collision tilemap in order (to create depth) """
-        self.render_tilemap(surface, camera, self.layers["traps"], self.tilesets["traps"])
-        self.render_tilemap(surface, camera, self.layers["objects"], self.tilesets["objects"])
+        self.traps.render(surface, camera)
         self.render_tilemap(surface, camera, self.tilemap, self.tilesets["collisions"])
+        self.collectables.render(surface, camera)
 
         if self.game.debugMode:
             self.render_debug(surface, camera.offset)
+        
+    def update(self, deltaTime):
+        self.traps.update(deltaTime)
+        self.collectables.update()

@@ -2,25 +2,21 @@ from .assets import *
 from .entity import *
 from .player import *
 from .bullet import *
-from .slime import *
+from .ennemies import *
+from .collectables import *
 
 
 class EntityGroup(pygame.sprite.Group):
 
-    def __init__(self, entityManager, entityType, *entites):
-        super().__init__(*entites)
+    def __init__(self, entityManager):
+        super().__init__()
         self.entityManager = entityManager
-        self.entityType = entityType
-
-    def spawn(self, *args, **kwargs):
-        entity = self.entityManager.types[self.entityType](self, self.entityManager.assets[self.entityType], *args, **kwargs, tag=self.entityType)
-        self.add(entity)
 
     def render(self, surface, camera):
-        for entiy in self:
-            entiy.render(surface, camera.offset, camera.rect)
+        for entity in self:
+            entity.render(surface, camera.offset, camera.rect)
             if self.entityManager.game.debugMode:
-                entiy.render_debug(surface, camera.offset)
+                entity.render_debug(surface, camera.offset)
 
 
 class EntityManager:
@@ -29,19 +25,22 @@ class EntityManager:
         super().__init__()
         self.game = game
         self.assets = game.assets.sprites
+        self.data = game.data.entities
         self.types = {
-            "bullet": Bullet,
-            "bat_anim" : Slime}
+            "zombie": Zombie
+        }
         StaticEntity.init(self)
-        self.player = None
-        self.ennemies = EntityGroup(self, "bat_anim")
-        self.bullets = EntityGroup(self, "bullet")
+        self.player = Player(self.assets["player_anim"], (0, 0), 0, tag="player")
+        self.ennemies = EntityGroup(self)
+        self.bullets = EntityGroup(self)
 
-        # self.ennemies.spawn((1100, 500), self.player, speed=75, health=5)
-        # self.ennemies.spawn((200, 500), self.player, speed=75, health=1)
-        # self.ennemies.spawn((900, 900), self.player, speed=75, health=10)
-        # self.ennemies.spawn((400, 20), self.player, speed=75, health=20)
-        # self.ennemies.spawn((200, 0), self.player, speed=75, health=50)
+    def spawn_ennemy(self, entityType, *args, **kwargs):
+        entity = self.types[entityType](self.data[entityType], self.player, self.assets[entityType + "_anim"], *args, **kwargs)
+        self.ennemies.add(entity)
+
+    def create_bullet(self, pos, vel):
+        bullet = Bullet(self.assets["bullet"], pos, hitsize=(5,5), vel=vel, tag="bullet")
+        self.bullets.add(bullet)
 
     @property
     def size(self):
@@ -54,12 +53,12 @@ class EntityManager:
                 if ID != -1:
                     tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
                     if ID == 16: # Player
-                        self.player = Player(None, self.assets["player_anim"], tile_pos, 0, tag="player")
-                        return
+                        self.player.position = pygame.Vector2(tile_pos)
+                    elif ID == 19: # Zombie
+                        self.spawn_ennemy("zombie", tile_pos)
 
-    def load_level(self, entity_tilemap):
+    def load_level(self, entity_tilemap, objects_tilemap):
         self.load_entities(entity_tilemap)
-        self.ennemies.spawn((600, 400), self.player, speed=75, health=3)
 
     def update(self, deltaTime, gravityScale):
         self.bullets.update(deltaTime, gravityScale)
@@ -74,11 +73,11 @@ class EntityManager:
             self.player.render_debug(surface, camera.offset)
         self.ennemies.render(surface, camera)
         self.bullets.render(surface, camera)
-    
-    def handle_collisions(self):
-        for bullet, slimes in pygame.sprite.groupcollide(self.bullets, self.ennemies, False, False).items():
-            bullet.destroy()
-            for slime in slimes:
-                slime.health -= bullet.damage
 
-        self.player.health -= len(pygame.sprite.spritecollide(self.player, self.ennemies, False))
+    def handle_collisions(self):
+        for bullet, ennemies in pygame.sprite.groupcollide(self.bullets, self.ennemies, False, False).items():
+            bullet.destroy()
+            for ennemy in ennemies:
+                ennemy.take_damage(bullet.damage)
+
+        #self.player.health -= len(pygame.sprite.spritecollide(self.player, self.ennemies, False))

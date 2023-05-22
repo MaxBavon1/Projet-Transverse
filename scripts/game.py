@@ -25,7 +25,6 @@ class GameManager(Menu):
         self.debugMode = False
         self.fixedUpdate = False
         self.mousePos = pygame.Vector2(pygame.mouse.get_pos())
-        self.ticks = 0
 
         self.level = Level(self)
         self.entityManager = EntityManager(self)
@@ -52,7 +51,7 @@ class GameManager(Menu):
         self.gravityScale = 1700
 
         self.level.load_level(lvl)
-        self.entityManager.load_level(self.level.layers["entities"])
+        self.entityManager.load_level(self.level.layers["entities"], self.level.layers["objects"])
         self.camera.follow(self.entityManager.player)
 
     def events(self, event):
@@ -89,11 +88,12 @@ class GameManager(Menu):
             if keyboard[K_F7]:
                 self.FPS += 1
 
+            self.level.update(self.deltaTime)
             self.entityManager.update(self.deltaTime, self.gravityScale)
             self.camera.update(self.deltaTime)
         else:
             self.UIManager.update(self.mousePos)
-
+    
     def render(self):
         self.level.render(self.window, self.camera)
 
@@ -106,6 +106,7 @@ class GameManager(Menu):
             self.window.blit(pause_bg, (0, 0))
             self.UIManager.render(self.window)
         else:
+ 
             if self.debugMode:
                 self.render_debug()
             if self.fixedUpdate:

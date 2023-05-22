@@ -37,6 +37,7 @@ assets = Assets()
 assets.ui["backgroundfinal2"] = pygame.transform.scale(assets.ui["backgroundfinal2"], MONITO_SIZE)
 data = Data()
 data.load_progress()
+data.load_game_data()
 Menu.init(window, clock, data, assets)
 
 def Launch():
