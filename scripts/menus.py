@@ -16,6 +16,7 @@ class Menu(ABC):
     def __init__(self, bg=(135, 135, 135), FPS=90):
         self.background = bg
         self.FPS = FPS
+        self.mousePos = pygame.Vector2(pygame.mouse.get_pos())
         self.running = True
 
     @classmethod
@@ -46,6 +47,7 @@ class Menu(ABC):
             self._events()
 
             self.clock.tick(self.FPS)
+            self.mousePos = pygame.Vector2(pygame.mouse.get_pos())
             self.update()
 
             self.window.fill(self.background)

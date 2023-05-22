@@ -2,9 +2,9 @@ import pygame
 import time
 from pygame.locals import *
 
+from .level import *
 from .camera import *
 from .entityManager import *
-from .level import *
 from .ui import *
 from .menus import *
 
@@ -30,7 +30,7 @@ class GameManager(Menu):
         self.level = Level(self)
         self.entityManager = EntityManager(self)
         self.camera = Camera(self)
-        
+
         # ---- UI ----
         self.paused = False
         self.UIManager = UIManager()    
@@ -70,7 +70,9 @@ class GameManager(Menu):
         if event.type == MOUSEBUTTONDOWN and not self.paused:
             if event.button == 1:	
                 self.entityManager.player.shoot()
-                # self.UIManager.clicked()
+        if event.type == MOUSEBUTTONUP and self.paused:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
     def update(self):
         self.deltaTime =  time.time() - self.lastFrame
@@ -150,6 +152,7 @@ class GameManager(Menu):
         if pause:
             pygame.mouse.set_visible(True)
             self.running = False
+            self.paused = False
 
 
 class Death(Menu):
@@ -163,7 +166,9 @@ class Death(Menu):
         self.UIManager.adds(retry_but, quit_but)
 
     def events(self, event):
-        pass
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
     def update(self):
         self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
@@ -199,7 +204,9 @@ class Win(Menu):
         self.UIManager.adds(win_label, retry_but, quit_but)
 
     def events(self, event):
-        pass
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
     def update(self):
         self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))

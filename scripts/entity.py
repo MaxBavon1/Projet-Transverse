@@ -103,7 +103,7 @@ class StaticEntity(pygame.sprite.Sprite):
             elif self.velocity.y < 0:# and self.hitbox.bottom > tile.bottom:
                 self.hitbox.top = tile.bottom
                 self.position.y = self.hitbox.centery
-                self.velocity.y = 0
+                self.velocity.y = 0 
 
     def update(self, deltaTime, gravityScale):
         self.health_update()

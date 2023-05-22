@@ -26,6 +26,10 @@ class UIManager:
             else:
                 self.buttons.append(obj)
 
+    def clicked(self, mousePos):
+        for obj in self.buttons:
+            obj.clicked(mousePos)
+
     def update(self, mousePos):
         for obj in self.buttons:
             obj.update(mousePos)
@@ -84,11 +88,12 @@ class Button:
     def collide(self, mousePos):
         return self.rect.collidepoint(mousePos.x, mousePos.y)
 
+    def clicked(self, mousePos):
+        if (self.hover):
+            self.command()
+
     def update(self, mousePos):
         self.hover = self.collide(mousePos)
-        
-        if (self.hover and pygame.mouse.get_pressed()[0]):
-            self.command()
 
     def render(self, surface):
         if self.hover:
@@ -126,11 +131,12 @@ class ButtonImg:
     def collide(self, mousePos):
         return self.rect.collidepoint(mousePos.x, mousePos.y)
 
+    def clicked(self, mousePos):
+        if (self.hover):
+            self.command()
+
     def update(self, mousePos):
         self.hover = self.collide(mousePos)
-        
-        if (self.hover and pygame.mouse.get_pressed()[0]):
-            self.command()
 
     def render(self, surface):
         if self.hover:
@@ -160,15 +166,16 @@ class ButtonLabel:
         self.hover_color = hover_color
         self.hover = False
         self.command = command
-    
+
     def collide(self, mousePos):
         return self.rect.collidepoint(mousePos.x, mousePos.y)
 
+    def clicked(self, mousePos):
+        if (self.hover):
+            self.command()
+
     def update(self, mousePos):
         self.hover = self.collide(mousePos)
-        
-        if (self.hover and pygame.mouse.get_pressed()[0]):
-            self.command()
 
     def render(self, surface):
         if self.hover:

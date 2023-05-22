@@ -22,7 +22,7 @@ window = pygame.display.set_mode((0, 0), DOUBLEBUF | FULLSCREEN, vsync=1)
 MONITO_SIZE = window.get_size()
 RESIZING = MONITO_SIZE[0] / DEFAULT_W, MONITO_SIZE[1] / DEFAULT_H
 print("MONITOR :", MONITO_SIZE)
-pygame.event.set_allowed([QUIT, KEYDOWN, MOUSEBUTTONDOWN])
+pygame.event.set_allowed([QUIT, KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP])
 clock = pygame.time.Clock()
 FPS = 90
 
@@ -149,7 +149,9 @@ class Levels(Menu):
             self.main.load_menu("game", lvl)
 
     def events(self, event):
-        pass
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
     def update(self):
         self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
@@ -202,10 +204,12 @@ class MainMenu(Menu):
             self.menus[menu].run(lvl)
 
     def events(self, event):
-        pass
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
     def update(self):
-        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
+        self.UIManager.update(self.mousePos)
 
     def render(self):
         self.window.blit(assets.ui["backgroundfinal2"], (0, 0))
