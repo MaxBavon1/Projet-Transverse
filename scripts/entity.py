@@ -154,7 +154,6 @@ class StaticEntity(pygame.sprite.Sprite):
 class Entity(StaticEntity):
      
     def __init__(self, animations, pos, hitsize=(0,0), speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="Entity"):
-        print("Animation :", anim_speed)
         self.animations = animations
         self.current_anim = list(animations.keys())[0]
         self.frame = 0
@@ -173,8 +172,6 @@ class Entity(StaticEntity):
 
     def animate(self):
         self.frame += 1
-        print(self.anim_speed)
-        print(self.animations)
         self.frame %= len(self.animations[self.current_anim]) * self.anim_speed
         self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
 

@@ -29,7 +29,7 @@ class EntityManager:
             "zombie": Zombie
         }
         StaticEntity.init(self)
-        self.player = Player(self.assets["player_anim"], (0, 0), tag="player")
+        self.player = Player(self.assets["player_anim"], (0, 0), hitsize=(15, 0), tag="player")
         self.ennemies = EntityGroup(self)
         self.bullets = EntityGroup(self)
 
