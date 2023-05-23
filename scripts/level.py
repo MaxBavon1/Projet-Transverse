@@ -46,13 +46,16 @@ class Level:
         self.tilesets = {}
         self.traps = TrapsGroup(self)
         self.collectables = CollectablesGroup(self)
+        self.parallalax_factor = 0.2
+        self.background = None
 
         self.level = 0
         self.name = ""
         self.width = 0
         self.height = 0
         self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
-        self.end = pygame.Rect(0, 0, 0, 0)
+        # self.end = pygame.Rect(0, 0, 0, 0)
+
 
     def load_tilemaps(self, lvl):
         path = f"data/level{lvl}/"
@@ -98,6 +101,9 @@ class Level:
                     if ID == 1: # Hearth
                         hearth = Collectable(self.assets["hearth_anim"], tile_pos, 20, (25, 25), tag="hearth")
                         self.collectables.add(hearth)
+                    if ID == 6: # End Flag
+                        flag = Collectable(self.assets["flag_anim"], (tile_pos.x + TILE_SIZE//2, tile_pos.y + TILE_SIZE//2), 20, (50, 50), tag="flag")
+                        self.collectables.add(flag)
 
     def load_level(self, lvl):
         self.level = lvl
@@ -106,10 +112,10 @@ class Level:
         self.load_tilesets()
         self.load_traps()
         self.load_objects()
+        self.background = self.assets["forest_bg"]
 
         self.width = len(self.tilemap[0])
         self.height = len(self.tilemap)
-        self.end = self.find_level_end()
 
     def level_complete(self):
         self.game.data.progress[f"level {self.level}"] = True
@@ -138,9 +144,6 @@ class Level:
         return tiles
 
     def handle_collisions(self, player):
-        if (player.hitbox.colliderect(self.end)):
-            self.level_complete() # V I C T O R Y
-
         for trap in self.traps:
             if trap.hitbox.colliderect(player.hitbox):
                 player.take_damage(trap.damage)
@@ -151,6 +154,8 @@ class Level:
                     player.coins += 1
                 elif collectable.tag == "hearth":
                     player.health += 2
+                elif collectable.tag == "flag":
+                    self.level_complete()
                 collectable.on_collision()
 
     def render_tilemap(self, surface, camera, tilemap, tileset):
@@ -176,6 +181,7 @@ class Level:
 
     def render(self, surface, camera):
         """ Render all level layers and main collision tilemap in order (to create depth) """
+        surface.blit(self.background, (-camera.position.x * self.parallalax_factor, -camera.position.y * self.parallalax_factor - 50))
         self.traps.render(surface, camera)
         self.render_tilemap(surface, camera, self.tilemap, self.tilesets["collisions"])
         self.collectables.render(surface, camera)

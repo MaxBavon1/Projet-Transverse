@@ -18,7 +18,6 @@ class EntityGroup(pygame.sprite.Group):
             if self.entityManager.game.debugMode:
                 entity.render_debug(surface, camera.offset)
 
-
 class EntityManager:
 
     def __init__(self, game):
@@ -30,7 +29,7 @@ class EntityManager:
             "zombie": Zombie
         }
         StaticEntity.init(self)
-        self.player = Player(self.assets["player_anim"], (0, 0), 0, tag="player")
+        self.player = Player(self.assets["player_anim"], (0, 0), tag="player")
         self.ennemies = EntityGroup(self)
         self.bullets = EntityGroup(self)
 
@@ -58,7 +57,10 @@ class EntityManager:
                         self.spawn_ennemy("zombie", tile_pos)
 
     def load_level(self, entity_tilemap, objects_tilemap):
-        self.load_entities(entity_tilemap)
+        self.load_entities(entity_tilemap)      
+        self.player.velocity = pygame.Vector2(0)
+        self.player.coins = 0
+        self.player.health = self.player.maxHealth
 
     def update(self, deltaTime, gravityScale):
         self.bullets.update(deltaTime, gravityScale)

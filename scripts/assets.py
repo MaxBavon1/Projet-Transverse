@@ -1,7 +1,7 @@
 import pygame
 import os
 
-__all__ = ["Assets", "TILE_SIZE", "COLORS"]
+__all__ = ["Assets", "TILE_SIZE", "PIXEL_RATIO", "COLORS"]
 
 PATH = os.getcwd()
 PIXEL_RATIO = 3
@@ -68,7 +68,10 @@ class Assets:
                 if "anim" in filename:
                     sprites[filename[:-1]] = self.load_animation(new_path)
                 else:
-                    sprites[filename] = self.load_image(new_path)
+                    if "background" in new_path:
+                        sprites[filename] = self.load_image(new_path, 1, False)
+                    else:
+                        sprites[filename] = self.load_image(new_path)
         return sprites
 
     def load_sprites(self):

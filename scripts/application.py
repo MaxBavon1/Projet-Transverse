@@ -1,4 +1,3 @@
-
 from pygame.locals import *
 import pygame
 import time
@@ -16,6 +15,7 @@ __all__ = ["Launch", "Quit"]
 
 # _____ Application Configurations  ____
 pygame.init()
+pygame.mixer.init()
 DEFAULT_W, DEFAULT_H = 1920, 1080
 # MONITO_SIZE = pygame.display.Info().current_w, pygame.display.Info().current_h
 window = pygame.display.set_mode((0, 0), DOUBLEBUF | FULLSCREEN, vsync=1)
@@ -27,6 +27,9 @@ clock = pygame.time.Clock()
 FPS = 90
 
 # Assets Game Loading
+pygame.mixer.music.load("assets/music/game_music.wav")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(99)
 loading_img = pygame.image.load("assets/ui/loading.jpg").convert()
 loading_img = pygame.transform.scale(loading_img, MONITO_SIZE)
 window.blit(loading_img, (0, 0))
@@ -34,7 +37,11 @@ pygame.display.update()
 
 time.sleep(0) # Prentending loading the game assets takes time...
 assets = Assets()
-assets.ui["backgroundfinal2"] = pygame.transform.scale(assets.ui["backgroundfinal2"], MONITO_SIZE)
+w, h = assets.sprites["forest_bg"].get_size()
+assets.sprites["forest_bg"] = pygame.transform.scale(assets.sprites["forest_bg"], (w * 2, h * 2))
+assets.sprites["backgroundfinal2"] = pygame.transform.scale(assets.sprites["backgroundfinal2"], MONITO_SIZE)
+assets.ui["volume_on"] = pygame.transform.scale_by(assets.ui["volume_on"], 3)
+assets.ui["volume_off"] = pygame.transform.scale_by(assets.ui["volume_off"], 3)
 data = Data()
 data.load_progress()
 data.load_game_data()
@@ -48,88 +55,81 @@ def Quit():
     exit()
 
 
-# class Rules(Menu):
 
-#     def __init__(self, app):
-#         super().__init__()
-#         self.app = app
-#         self.UIManager = UIManager()
-#         self.UIManager.add_button((0, 0), (200, 200), "RULES")
+class Rules(Menu):
+
+    def __init__(self, main, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.main = main
+        self.UIManager = UIManager()
+        
+        quit_but = Button((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(quit_but)
+
+    def events(self, event):
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
+
+    def update(self):
+        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
+
+    def render(self):
+        self.UIManager.render(self.window)
+
+
+class Settings(Menu):
+
+    def __init__(self, main, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.main = main
+        self.UIManager = UIManager()
     
-#     def events(self):
-# 		# --- Touch Keys ---
-#         for event in pygame.event.get():
-#             if event.type == QUIT:
-#                self.quit()
-#             if event.type == KEYDOWN:
-#                 if event.key == K_ESCAPE:
-#                     self.quit()
-#             if event.type == MOUSEBUTTONDOWN:
-#                 if event.button == 1:
-#                     self.UIManager.clicked()
+        title = Label((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Settings", COLORS["white"])
+        sound_on = ButtonImg((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.ui["volume_on"], COLORS["white"], command=pygame.mixer.music.unpause)
+        sound_off = ButtonImg((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.ui["volume_off"], COLORS["white"], command=pygame.mixer.music.pause)
+        quit_but = Button((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(title, sound_on, sound_off, quit_but)
 
-#     def update(self):
-#         self.app.clock.tick(self.app.FPS)
+    def events(self, event):
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
-#         self.app.mousePos = pygame.Vector2(pygame.mouse.get_pos())
+    def update(self):
+        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
 
-#         self.UIManager.update()
-
-#     def render(self):
-#         self.app.window.fill((135, 135, 135))
-#         self.UIManager.render(self.app.window)
-#         pygame.display.update()
-
-# class Settings(Menu):
-
-#     def __init__(self):
-#         super().__init__(window, clock)
-#         self.UIManager = UIManager()
-#         back_but = Label()
-#         self.UIManager.add_button((0, 0), (200, 200), "SETTINGS")
-    
-#     def events(self):
-#         pass
-
-#     def update(self):
-#         self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
-
-#     def render(self):
-#         self.UIManager.render(self.window)
+    def render(self):
+        self.UIManager.render(self.window)
 
 
-# class Credits(Menu):
 
-#     def __init__(self, app):
-#         super().__init__()
-#         self.app = app
-#         self.UIManager = UIManager()
-#         self.UIManager.add_button((0, 0), (200, 200), "CREDITS")
-#         # self.UIManager.buttons.append(Label((500, 600), "TEST", (49,175,212), (226,40,220)))
+class Credits(Menu):
 
-#     def events(self):
-# 		# --- Touch Keys ---
-#         for event in pygame.event.get():
-#             if event.type == QUIT:
-#                self.quit()
-#             if event.type == KEYDOWN:
-#                 if event.key == K_ESCAPE:
-#                     self.quit()
-#             if event.type == MOUSEBUTTONDOWN:
-#                 if event.button == 1:
-#                     self.UIManager.clicked()
+    def __init__(self, main, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.main = main
+        self.UIManager = UIManager()
+        
+        made = Label((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Made By : ", COLORS["white"])
+        creators1 = Label((MONITO_SIZE[0] / 2, 300 * RESIZING[1]), assets.fonts["rubik40"], "Maxime Etienne", COLORS["purple"])
+        creators2 = Label((MONITO_SIZE[0] / 2, 350 * RESIZING[1]), assets.fonts["rubik40"], "Alexandre Kalaydjian", COLORS["purple"])
+        creators3 = Label((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.fonts["rubik40"], "Lilou Becker", COLORS["purple"])
+        creators4 = Label((MONITO_SIZE[0] / 2, 450 * RESIZING[1]), assets.fonts["rubik40"], "Nawal Moulouad ", COLORS["purple"])
+        creators5 = Label((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik40"], "Sami Frydman", COLORS["purple"])
+        quit_but = Button((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(made, creators1, creators2, creators3, creators4, creators5, quit_but)
 
-#     def update(self):
-#         self.app.clock.tick(self.app.FPS)
+    def events(self, event):
+        if event.type == MOUSEBUTTONUP:
+            if event.button == 1:
+                self.UIManager.clicked(self.mousePos)
 
-#         self.app.mousePos = pygame.Vector2(pygame.mouse.get_pos())
+    def update(self):
+        self.UIManager.update(pygame.Vector2(pygame.mouse.get_pos()))
 
-#         self.UIManager.update()
-
-#     def render(self):
-#         self.app.window.fill((135, 135, 135))
-#         self.UIManager.render(self.app.window)
-#         pygame.display.update()
+    def render(self):
+        self.UIManager.render(self.window)
 
 
 class Levels(Menu):
@@ -143,7 +143,8 @@ class Levels(Menu):
         level1_label = ButtonLabel((MONITO_SIZE[0] / 2, 450 * RESIZING[1]), assets.fonts["rubik40"], "Level 1", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(1))
         level2_label = ButtonLabel((MONITO_SIZE[0] / 2, 550 * RESIZING[1]), assets.fonts["rubik40"], "Level 2", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(2))
         level3_label = ButtonLabel((MONITO_SIZE[0] / 2, 650 * RESIZING[1]), assets.fonts["rubik40"], "Level 3", COLORS["blue"], COLORS["green"], command=lambda:self.load_level(3))
-        self.UIManager.adds(levels_label, level1_label, level2_label, level3_label)
+        quit_but = Button((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(quit_but, levels_label, level1_label, level2_label, level3_label)
 
     def load_level(self, lvl):
         if lvl == 1 or data.progress[f"level {lvl - 1}"]:
@@ -164,7 +165,7 @@ class Levels(Menu):
         self.UIManager.objects = []
         for i in range(1, data.progress["nb_levels"]):
             if (not data.progress[f"level {i}"]):
-                button = self.UIManager.buttons[i + 1]
+                button = self.UIManager.buttons[i + 2]
                 self.UIManager.add(Image((button.rect.x - 25, button.rect.centery), assets.ui["lock"]))
                 button.hover_color = (255, 0, 0)
 
@@ -178,16 +179,20 @@ class MainMenu(Menu):
 
         self.UIManager = UIManager()
 
-        play_but = ButtonLabel((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Play", COLORS["cyan"], COLORS["purple"], command=lambda:self.load_menu("levels", 1))
-        rules_but = ButtonLabel((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.fonts["rubik60"], "Rules", COLORS["cyan"], COLORS["purple"])
-        settings_but = ButtonLabel((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik60"], "Settings", COLORS["cyan"], COLORS["purple"])
-        credits_but = ButtonLabel((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik60"], "Credits", COLORS["cyan"], COLORS["purple"])
-        quit_but = ButtonLabel((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik60"], "Quit", COLORS["cyan"], COLORS["purple"], command=Quit)
+        title = Label((MONITO_SIZE[0] / 2, 100 * RESIZING[1]), assets.fonts["rubik80"], "PHILANTROPIST", COLORS["purple"])
+        play_but = Button((MONITO_SIZE[0] / 2, 300 * RESIZING[1]), (275, 100), assets.fonts["rubik60"], "Play", command=lambda:self.load_menu("levels", 1))
+        rules_but = ButtonLabel((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik60"], "Rules", COLORS["cyan"], COLORS["purple"], lambda:self.load_menu("rules"))
+        settings_but = ButtonLabel((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik60"], "Settings", COLORS["cyan"], COLORS["purple"], lambda:self.load_menu("settings"))
+        credits_but = ButtonLabel((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik60"], "Credits", COLORS["cyan"], COLORS["purple"], lambda:self.load_menu("credits"))
+        quit_but = ButtonLabel((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), assets.fonts["rubik60"], "Quit", COLORS["cyan"], COLORS["purple"], command=Quit)
 
-        self.UIManager.adds(play_but, rules_but, settings_but, credits_but, quit_but)
+        self.UIManager.adds(title, play_but, rules_but, settings_but, credits_but, quit_but)
 
 
         self.menus = {
+            "rules" : Rules(self, COLORS["grey"], 90),
+            "settings" : Settings(self, COLORS["black"], 90),
+            "credits" : Credits(self, COLORS["black"], 90),
             "levels" : Levels(self, COLORS["white"], 90),
             "game" : GameManager(COLORS["blue"], 144)
         }
@@ -213,5 +218,5 @@ class MainMenu(Menu):
         self.UIManager.update(self.mousePos)
 
     def render(self):
-        self.window.blit(assets.ui["backgroundfinal2"], (0, 0))
+        self.window.blit(assets.sprites["backgroundfinal2"], (0, 0))
         self.UIManager.render(self.window)

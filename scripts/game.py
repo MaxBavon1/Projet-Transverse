@@ -33,9 +33,10 @@ class GameManager(Menu):
         # ---- UI ----
         self.paused = False
         self.UIManager = UIManager()    
-        resume_but = Button((self.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Resume", command=self.unpause)
-        quit_but = Button((self.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=lambda:self.quit(True))
-        self.UIManager.adds(resume_but, quit_but)
+        resume_but = Button((self.WIDTH / 2, 350), (250, 100), self.assets.fonts["rubik40"], "Resume", command=self.unpause)
+        retry_but = Button((self.WIDTH / 2, 500), (250, 100), self.assets.fonts["rubik40"], "Retry", command=lambda:self.load_level(self.level.level))
+        quit_but = Button((self.WIDTH / 2, 650), (250, 100), self.assets.fonts["rubik40"], "Main Menu", command=lambda:self.quit(True))
+        self.UIManager.adds(retry_but, resume_but, quit_but)
 
         self.deathMenu = Death(self)
         self.winMenu = Win(self)
@@ -46,6 +47,7 @@ class GameManager(Menu):
 
     def load_level(self, lvl):
         """ Game Loading Datas, Entities, Levels """
+        self.paused = False
         self.lastFrame = time.time()
         pygame.mouse.set_visible(False)
         self.gravityScale = 1700
@@ -163,7 +165,7 @@ class Death(Menu):
         self.game = game
         self.UIManager = UIManager()
         retry_but = Button((self.game.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Retry", command=self.close)
-        quit_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=self.quit)
+        quit_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Main Menu", command=self.quit)
         self.UIManager.adds(retry_but, quit_but)
 
     def events(self, event):
@@ -201,8 +203,9 @@ class Win(Menu):
         self.background = (40, 91, 133)
         win_label = Label((self.game.WIDTH / 2, 200), self.assets.fonts["rubik80"], "Victory !", (250, 241, 72))
         retry_but = Button((self.game.WIDTH / 2, 400), (250, 100), self.assets.fonts["rubik40"], "Retry", command=self.close)
-        quit_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Quit", command=self.quit)
-        self.UIManager.adds(win_label, retry_but, quit_but)
+        next_lvl_but = Button((self.game.WIDTH / 2, 550), (250, 100), self.assets.fonts["rubik40"], "Next Level", command=lambda:self.game.run(self.game.level.level+1))
+        quit_but = Button((self.game.WIDTH / 2, 700), (250, 100), self.assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(win_label, retry_but, next_lvl_but, quit_but)
 
     def events(self, event):
         if event.type == MOUSEBUTTONUP:

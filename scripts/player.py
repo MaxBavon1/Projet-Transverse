@@ -11,7 +11,8 @@ class Player(Entity):
         self.anim_speed = 8
         self.jumpForce = 600
         self.speed = 250
-        self.health = 10
+        self.maxHealth = 10
+        self.health = self.maxHealth
         self.flyingSpeed = 2500
         self.play("walk_right")
 

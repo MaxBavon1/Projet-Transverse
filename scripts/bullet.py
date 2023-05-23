@@ -31,11 +31,11 @@ class Bullet(StaticEntity):
             self.bounce_off(-1)
 
         for tile in level.collide(self): # TileMap
-            if self.velocity.x > 0:
+            if self.velocity.x > 0 and self.hitbox.left < tile.left:
                 self.hitbox.right = tile.left
                 self.position.x = self.hitbox.centerx
                 self.bounce_off(-1)
-            elif self.velocity.x < 0:
+            elif self.velocity.x < 0 and self.hitbox.right > tile.right:
                 self.hitbox.left = tile.right
                 self.position.x = self.hitbox.centerx
                 self.bounce_off(-1)
@@ -52,11 +52,11 @@ class Bullet(StaticEntity):
             self.bounce_off(1)
 
         for tile in level.collide(self): # TileMap
-            if self.velocity.y > 0:# and self.hitbox.top < tile.top:
+            if self.velocity.y > 0 and self.hitbox.top < tile.top:
                 self.hitbox.bottom = tile.top
                 self.position.y = self.hitbox.centery
                 self.bounce_off(1)
-            elif self.velocity.y < 0:# and self.hitbox.bottom > tile.bottom:
+            elif self.velocity.y < 0 and self.hitbox.bottom > tile.bottom:
                 self.hitbox.top = tile.bottom
                 self.position.y = self.hitbox.centery
                 self.bounce_off(1)

@@ -94,12 +94,12 @@ class StaticEntity(pygame.sprite.Sprite):
             self.grounded = True
 
         for tile in level.collide(self): # TileMap
-            if self.velocity.y > 0:# and self.hitbox.top < tile.top:
+            if self.velocity.y > 0:
                 self.hitbox.bottom = tile.top
                 self.position.y = self.hitbox.centery
                 self.velocity.y = 0
                 self.grounded = True
-            elif self.velocity.y < 0:# and self.hitbox.bottom > tile.bottom:
+            elif self.velocity.y < 0:
                 self.hitbox.top = tile.bottom
                 self.position.y = self.hitbox.centery
                 self.velocity.y = 0 
@@ -129,7 +129,6 @@ class StaticEntity(pygame.sprite.Sprite):
  
     def render_debug(self, surface, offset):
         # HitBox
-        #hitbox = pygame.Rect(self.rect.x - offset.x, self.rect.y - offset.y, self.rect.w, self.rect.h)
         hitbox = pygame.Rect(self.hitbox.x - offset.x, self.hitbox.y - offset.y, self.hitbox.w, self.hitbox.h)
         if self.grounded: pygame.draw.rect(surface, (0,255,0), hitbox, 1)
         else: pygame.draw.rect(surface, (255,0,0), hitbox, 1)
@@ -154,13 +153,14 @@ class StaticEntity(pygame.sprite.Sprite):
 
 class Entity(StaticEntity):
      
-    def __init__(self, animations, pos, speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="StaticEntity"):
+    def __init__(self, animations, pos, hitsize=(0,0), speed=1, vel=0, health=1, damage=1, anim_speed=1, tag="Entity"):
+        print("Animation :", anim_speed)
         self.animations = animations
         self.current_anim = list(animations.keys())[0]
         self.frame = 0
         self.anim_speed = anim_speed
         self.direction = "right"
-        super().__init__(animations[self.current_anim][0], pos, speed, vel, health, damage, tag)
+        super().__init__(animations[self.current_anim][0], pos, hitsize, speed, vel, health, damage, tag)
 
     def set_animation_rect(self, animation, sprite):
         pass
@@ -173,6 +173,8 @@ class Entity(StaticEntity):
 
     def animate(self):
         self.frame += 1
+        print(self.anim_speed)
+        print(self.animations)
         self.frame %= len(self.animations[self.current_anim]) * self.anim_speed
         self.sprite = self.animations[self.current_anim][self.frame // self.anim_speed]
 
