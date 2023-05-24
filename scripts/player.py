@@ -10,10 +10,10 @@ class Player(Entity):
         super().__init__(*args, **kargs)
         self.anim_speed = 8
         self.jumpForce = 600
-        self.speed = 250
+        self.speed = 5000#250
         self.maxHealth = 10
         self.health = self.maxHealth
-        self.flyingSpeed = 2500
+        self.flyingSpeed = 10000#2500
         self.play("walk_right")
 
         self.hit = False
