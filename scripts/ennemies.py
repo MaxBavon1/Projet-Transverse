@@ -9,7 +9,7 @@ __all__ = ["Zombie"]
 class Zombie(Entity):
 
     def __init__(self, data, target, animations, pos):
-        super().__init__(animations, pos, (0,0), data["speed"], (0,0), data["health"], data["damage"], data["anim_speed"], "zombie")
+        super().__init__(animations, pos, (15,0), data["speed"], (0,0), data["health"], data["damage"], data["anim_speed"], "zombie")
         self.target = target
         self.speed = 100
         self.jumpForce = 500

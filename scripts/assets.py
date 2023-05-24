@@ -101,7 +101,7 @@ class Assets:
 
     def load_ui(self):
         ui = {}
-        path = os.path.join(PATH, "assets/ui/")
+        path = os.path.join(PATH, "assets/ui")
         for (root, dirs, files) in os.walk(path, topdown=True):
             for file_ in files:
                 ui[file_[:-4]] = self.load_image(root + '/' + file_)
