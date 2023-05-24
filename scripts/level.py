@@ -46,6 +46,7 @@ class Level:
         self.tilesets = {}
         self.traps = TrapsGroup(self)
         self.collectables = CollectablesGroup(self)
+        
         self.parallalax_factor = 0.2
         self.background = None
 
@@ -54,10 +55,9 @@ class Level:
         self.width = 0
         self.height = 0
         self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
-        # self.end = pygame.Rect(0, 0, 0, 0)
-
 
     def load_tilemaps(self, lvl):
+        self.layers = {}
         path = f"data/level{lvl}/"
         for tilemap in os.listdir(path):
             name = tilemap.replace(".csv", "")
@@ -69,11 +69,13 @@ class Level:
                 self.layers[name] = list(csv.reader(open(path + tilemap)))
 
     def load_tilesets(self):
+        self.tilesets = {}
         self.tilesets["collisions"] = self.tiles[self.name]
         for name in self.layers:
             self.tilesets[name] = self.tiles[name]
 
     def load_traps(self):
+        self.traps.empty()
         traps_tilemap = self.layers["traps"]
         for y in range(len(traps_tilemap)):
             for x in range(len(traps_tilemap[0])):
@@ -87,6 +89,7 @@ class Level:
                         self.traps.add(spike)
 
     def load_objects(self):
+        self.collectables.empty()
         objects_tilemap = self.layers["objects"]
         for y in range(len(objects_tilemap)):
             for x in range(len(objects_tilemap[0])):
