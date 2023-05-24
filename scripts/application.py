@@ -164,11 +164,12 @@ class Levels(Menu):
     def run(self):
         self.UIManager.objects = []
         for i in range(1, data.progress["nb_levels"]):
+            button = self.UIManager.buttons[i + 2]
             if (not data.progress[f"level {i}"]):
-                button = self.UIManager.buttons[i + 2]
                 self.UIManager.add(Image((button.rect.x - 25, button.rect.centery), assets.ui["lock"]))
-                button.hover_color = (255, 0, 0)
-
+                button.hover_color = COLORS["red"]
+            else:
+                button.hover_color = COLORS["green"]
         super().run()
 
 

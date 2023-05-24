@@ -39,6 +39,7 @@ class Level:
 
     def __init__(self, game):
         self.game = game
+        self.data = self.game.data.levels
         self.assets = game.assets.sprites
         self.tiles = game.assets.tiles
         self.tilemap = []
@@ -46,6 +47,7 @@ class Level:
         self.tilesets = {}
         self.traps = TrapsGroup(self)
         self.collectables = CollectablesGroup(self)
+        
         self.parallalax_factor = 0.2
         self.background = None
 
@@ -53,11 +55,10 @@ class Level:
         self.name = ""
         self.width = 0
         self.height = 0
-        self.border = pygame.Rect(0, 0, game.WIDTH * 10, game.HEIGHT * 10)
-        # self.end = pygame.Rect(0, 0, 0, 0)
-
+        self.border = pygame.Rect(0, 0, 0, 0)
 
     def load_tilemaps(self, lvl):
+        self.layers = {}
         path = f"data/level{lvl}/"
         for tilemap in os.listdir(path):
             name = tilemap.replace(".csv", "")
@@ -69,11 +70,13 @@ class Level:
                 self.layers[name] = list(csv.reader(open(path + tilemap)))
 
     def load_tilesets(self):
+        self.tilesets = {}
         self.tilesets["collisions"] = self.tiles[self.name]
         for name in self.layers:
             self.tilesets[name] = self.tiles[name]
 
     def load_traps(self):
+        self.traps.empty()
         traps_tilemap = self.layers["traps"]
         for y in range(len(traps_tilemap)):
             for x in range(len(traps_tilemap[0])):
@@ -87,6 +90,7 @@ class Level:
                         self.traps.add(spike)
 
     def load_objects(self):
+        self.collectables.empty()
         objects_tilemap = self.layers["objects"]
         for y in range(len(objects_tilemap)):
             for x in range(len(objects_tilemap[0])):
@@ -112,10 +116,11 @@ class Level:
         self.load_tilesets()
         self.load_traps()
         self.load_objects()
-        self.background = self.assets["forest_bg"]
+        self.background = self.assets[self.data[f"level{self.level}"]["background"]]
 
         self.width = len(self.tilemap[0])
         self.height = len(self.tilemap)
+        self.border = pygame.Rect(0, 0, self.width * TILE_SIZE, self.height * TILE_SIZE)
 
     def level_complete(self):
         self.game.data.progress[f"level {self.level}"] = True
@@ -137,7 +142,8 @@ class Level:
         for y in range(tileY - detection_range, tileY + detection_range + 1):
             for x in range(tileX - detection_range, tileX + detection_range + 1):
                 if (x >= 0 and x < self.width) and (y >= 0 and y < self.height):
-                    if int(self.tilemap[y][x]) > 20:
+                    ID = int(self.tilemap[y][x])
+                    if ID != -1 and ID < 100 and ID not in self.data[f"level{self.level}"]["collisions"]:
                         tile = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                         if entity.hitbox.colliderect(tile):
                             tiles.append(tile)
@@ -166,8 +172,11 @@ class Level:
                 if ID != -1:
                     tile_pos = pygame.Vector2(x * TILE_SIZE, y * TILE_SIZE)
                     if screen.colliderect(pygame.Rect(tile_pos, (TILE_SIZE, TILE_SIZE))):
-                        tile = tileset[ID]
-                        surface.blit(tile, tile_pos - offset)
+                        try:
+                            tile = tileset[ID]
+                            surface.blit(tile, tile_pos - offset)
+                        except IndexError:
+                            print("Invalid Tile !")
     
     def render_debug(self, surface, offset):
         for y in range(self.height):
