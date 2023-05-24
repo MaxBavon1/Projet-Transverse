@@ -3,6 +3,12 @@ import math
 
 __all__ = ["StaticEntity", "Entity"]
 
+""" All Games Objects are considered as entities, static entities are entities that do not 
+have animations, whearas entity are animated
+Therefore StaticEntity and Entity defines the behaviour of all objects in the game, 
+since the player, the ennemies, the bullets and the collectables all inherit from the entity class"""
+
+
 class StaticEntity(pygame.sprite.Sprite):
 
     entityManager = None

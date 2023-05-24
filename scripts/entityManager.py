@@ -30,12 +30,13 @@ class EntityManager:
             "zombie": Zombie
         }
         StaticEntity.init(self)
+        Ennemy.init(self.data, self.assets)
         self.player = Player(self.assets["player_anim"], (0, 0), hitsize=(15, 0), tag="player")
         self.ennemies = EntityGroup(self)
         self.bullets = EntityGroup(self)
 
     def spawn_ennemy(self, entityType, *args, **kwargs):
-        entity = self.types[entityType](self.data[entityType], self.player, self.assets[entityType + "_anim"], *args, **kwargs)
+        entity = self.types[entityType](self.player, *args, **kwargs)
         self.ennemies.add(entity)
 
     def create_bullet(self, pos, vel):

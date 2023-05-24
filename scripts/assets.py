@@ -3,6 +3,10 @@ import os
 
 __all__ = ["Assets", "TILE_SIZE", "PIXEL_RATIO", "COLORS"]
 
+""" Loads all the images, animations, sprites, tilesets etc... Basicaly all pixel art from
+the game are loaded with the Assets class, it uses a recursive function to browse throw the assets folder
+and load the game assets """
+
 PATH = os.getcwd()
 PIXEL_RATIO = 3
 PIXEL_UNIT = 16

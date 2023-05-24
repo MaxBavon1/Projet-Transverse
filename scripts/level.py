@@ -42,6 +42,7 @@ class Level:
         self.data = self.game.data.levels
         self.assets = game.assets.sprites
         self.tiles = game.assets.tiles
+
         self.tilemap = []
         self.layers = {}
         self.tilesets = {}
@@ -178,6 +179,9 @@ class Level:
                         except IndexError:
                             print("Invalid Tile !")
     
+    def render_fast(self, surface, camera):
+        pass
+
     def render_debug(self, surface, offset):
         for y in range(self.height):
             for x in range(self.width):

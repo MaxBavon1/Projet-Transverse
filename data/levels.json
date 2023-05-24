@@ -5,6 +5,10 @@
     },
     "level2" : {
         "collisions" : [1, 2, 3, 4],
-        "background" : "forest_bg"
+        "background" : "snow_bg"
+    },
+    "level3" : {
+        "collisions" : [14, 16, 30],
+        "background" : "lava_bg"
     }
 }

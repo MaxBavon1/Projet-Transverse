@@ -39,6 +39,10 @@ time.sleep(0) # Prentending loading the game assets takes time...
 assets = Assets()
 w, h = assets.sprites["forest_bg"].get_size()
 assets.sprites["forest_bg"] = pygame.transform.scale(assets.sprites["forest_bg"], (w * 2, h * 2))
+w, h = assets.sprites["snow_bg"].get_size()
+assets.sprites["snow_bg"] = pygame.transform.scale(assets.sprites["snow_bg"], (w * 4, h * 4))
+w, h = assets.sprites["lava_bg"].get_size()
+assets.sprites["lava_bg"] = pygame.transform.scale(assets.sprites["lava_bg"], (w * 2, h * 2))
 assets.sprites["backgroundfinal2"] = pygame.transform.scale(assets.sprites["backgroundfinal2"], MONITO_SIZE)
 assets.ui["volume_on"] = pygame.transform.scale_by(assets.ui["volume_on"], 3)
 assets.ui["volume_off"] = pygame.transform.scale_by(assets.ui["volume_off"], 3)
@@ -63,8 +67,15 @@ class Rules(Menu):
         self.main = main
         self.UIManager = UIManager()
         
-        quit_but = Button((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
-        self.UIManager.adds(quit_but)
+        title = Label((MONITO_SIZE[0] / 2, 200 * RESIZING[1]), assets.fonts["rubik80"], "Rules", COLORS["purple"])
+        mouvement = Label((MONITO_SIZE[0] / 2, 400 * RESIZING[1]), assets.fonts["rubik40"], "Press Q/D or Left Arrow/Right Arrow to Move", COLORS["blue"])
+        jump = Label((MONITO_SIZE[0] / 2, 500 * RESIZING[1]), assets.fonts["rubik40"], "Press space of Arrow Up to Jump", COLORS["blue"])
+        shoot = Label((MONITO_SIZE[0] / 2, 600 * RESIZING[1]), assets.fonts["rubik40"], "Aim and press Left Mouse to Shoot", COLORS["blue"])
+        god_mod = Label((MONITO_SIZE[0] / 2, 700 * RESIZING[1]), assets.fonts["rubik40"], "God Mode : press shift to fly and Tab to shoot infinite bullets", COLORS["blue"])
+        debug = Label((MONITO_SIZE[0] / 2, 800 * RESIZING[1]), assets.fonts["rubik40"], "Press F3 to debug", COLORS["blue"])
+
+        quit_but = Button((MONITO_SIZE[0] / 2, 900 * RESIZING[1]), (250, 100), assets.fonts["rubik40"], "Main Menu", command=self.quit)
+        self.UIManager.adds(title, mouvement, jump, shoot, god_mod, debug, quit_but)
 
     def events(self, event):
         if event.type == MOUSEBUTTONUP:
@@ -191,7 +202,7 @@ class MainMenu(Menu):
 
 
         self.menus = {
-            "rules" : Rules(self, COLORS["grey"], 90),
+            "rules" : Rules(self, COLORS["white"], 90),
             "settings" : Settings(self, COLORS["black"], 90),
             "credits" : Credits(self, COLORS["black"], 90),
             "levels" : Levels(self, COLORS["white"], 90),

@@ -148,8 +148,11 @@ class GameManager(Menu):
     def run(self, lvl):
         print("[LAUNCHING GAME...]")
 
-        self.load_level(lvl)
-        super().run()
+        if lvl <= 3:
+            self.load_level(lvl)
+            super().run()
+        else:
+            print("You win !")
 
     def quit(self, pause=False):
         if pause:

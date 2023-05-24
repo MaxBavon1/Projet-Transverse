@@ -2,6 +2,9 @@ import json
 
 __all__ = ["Data"]
 
+""" Loads all the data/configurations needed to play the game """
+
+
 class Data:
 
     __slots__ = ["path", "progress", "entities", "levels"]
